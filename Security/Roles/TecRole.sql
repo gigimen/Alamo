@@ -1,0 +1,7 @@
+CREATE ROLE [TecRole]
+AUTHORIZATION [dbo]
+GO
+ALTER ROLE [TecRole] ADD MEMBER [tecnici]
+GO
+ALTER ROLE [TecRole] ADD MEMBER [WebTech]
+GO

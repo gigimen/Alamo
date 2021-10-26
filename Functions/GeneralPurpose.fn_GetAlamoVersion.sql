@@ -1,0 +1,18 @@
+SET QUOTED_IDENTIFIER ON
+GO
+SET ANSI_NULLS ON
+GO
+CREATE FUNCTION [GeneralPurpose].[fn_GetAlamoVersion] ()  
+RETURNS INT 
+WITH SCHEMABINDING
+AS  
+BEGIN 
+	return 1
+END
+
+
+
+
+
+
+GO

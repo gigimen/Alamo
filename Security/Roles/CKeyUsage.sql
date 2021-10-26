@@ -1,0 +1,5 @@
+CREATE ROLE [CKeyUsage]
+AUTHORIZATION [dbo]
+GO
+ALTER ROLE [CKeyUsage] ADD MEMBER [pingu]
+GO

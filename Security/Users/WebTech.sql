@@ -1,0 +1,2 @@
+CREATE USER [WebTech] FOR LOGIN [WebTech]
+GO

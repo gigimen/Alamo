@@ -1,0 +1,3 @@
+CREATE SCHEMA [Techs]
+AUTHORIZATION [TecRole]
+GO

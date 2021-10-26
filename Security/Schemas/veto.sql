@@ -1,0 +1,3 @@
+CREATE SCHEMA [veto]
+AUTHORIZATION [vetoRole]
+GO

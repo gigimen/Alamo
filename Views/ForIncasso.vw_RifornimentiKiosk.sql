@@ -1,0 +1,22 @@
+SET QUOTED_IDENTIFIER ON
+GO
+SET ANSI_NULLS ON
+GO
+
+
+
+CREATE VIEW [ForIncasso].[vw_RifornimentiKiosk]
+WITH SCHEMABINDING
+AS
+SELECT GAMINGDATE,
+	CASE
+		WHEN DenoID IN(22,61) THEN 'KIOSK_RIMANENZ_' + UPPER(RIGHT(Tag,4)) 
+		WHEN DENOID IN(29,36) THEN 'KIOSK_BILLBOX_' + UPPER(RIGHT(Tag,4)) 
+		ELSE'XXXXX??'
+	END AS ForIncassoTag
+	,(Quantity*Denomination) AS Amount
+	FROM [Accounting].[vw_AllConteggiDenominations] 
+	WHERE SnapshotTypeID IN (18,19)
+
+
+GO

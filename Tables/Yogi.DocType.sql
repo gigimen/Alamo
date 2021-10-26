@@ -1,0 +1,8 @@
+CREATE TABLE [Yogi].[DocType]
+(
+[Id] [int] NOT NULL IDENTITY(1, 1),
+[Name] [varchar] (50) COLLATE Latin1_General_CI_AS NOT NULL
+) ON [PRIMARY]
+GO
+ALTER TABLE [Yogi].[DocType] ADD CONSTRAINT [PK_DocType] PRIMARY KEY CLUSTERED  ([Id]) ON [PRIMARY]
+GO

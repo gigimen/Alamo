@@ -1,0 +1,2 @@
+CREATE USER [veto] FOR LOGIN [veto] WITH DEFAULT_SCHEMA=[veto]
+GO

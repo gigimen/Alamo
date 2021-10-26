@@ -1,0 +1,14 @@
+CREATE ROLE [YogiRole]
+AUTHORIZATION [dbo]
+GO
+ALTER ROLE [YogiRole] ADD MEMBER [alamo]
+GO
+ALTER ROLE [YogiRole] ADD MEMBER [chi.sei]
+GO
+ALTER ROLE [YogiRole] ADD MEMBER [yogi.bubu]
+GO
+GRANT CONNECT TO [YogiRole]
+GRANT DELETE TO [YogiRole]
+GRANT INSERT TO [YogiRole]
+GRANT SELECT TO [YogiRole]
+GRANT UPDATE TO [YogiRole]
