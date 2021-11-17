@@ -253,8 +253,6 @@ SELECT 	'CHIPMOV_' + cass.Acronim + '_' + @oggi + '_CAS_' + cast (cass.DenoID AS
 FROM 
 (	
 /*
-
-
 DECLARE @gaming DATETIME,	@oggi VARCHAR(16)
 
 SET @gaming = '2.10.2020'
@@ -265,7 +263,7 @@ set 	@oggi = 'OGGI'
 	SELECT [ForIncasso].[fn_DenoIndex](ValueTypeID,DenoID) AS DenoID,Acronim,
 	SUM(Chiusura) + SUM(Ripristino) AS Apertura
 	from [ForIncasso].[fn_GetChipsRipristinati] (@gaming,4)  --CASSE
-	WHERE ValueTypeID <> 36  AND DenoID NOT IN (@luckyDenoID) --ignore chips gioco euro e lucky
+	WHERE ValueTypeID NOT IN(36)  AND DenoID NOT IN (@luckyDenoID) --ignore chips gioco euro e lucky e poker
 	GROUP BY [ForIncasso].[fn_DenoIndex](ValueTypeID,DenoID),Acronim
 ) cass
 FULL OUTER JOIN 
@@ -273,7 +271,7 @@ FULL OUTER JOIN
 	SELECT [ForIncasso].[fn_DenoIndex](ValueTypeID,DenoID) AS DenoID,Acronim,
 	SUM(Chiusura) + SUM(Ripristino) AS Apertura
 	from [ForIncasso].[fn_GetChipsRipristinati] (@gaming,7)  --CC
-	WHERE ValueTypeID <> 36  AND DenoID NOT IN (@luckyDenoID) --ignore chips gioco euro e lucky
+	WHERE ValueTypeID NOT IN(36)  AND DenoID NOT IN (@luckyDenoID) --ignore chips gioco euro e lucky e poker
 	GROUP BY [ForIncasso].[fn_DenoIndex](ValueTypeID,DenoID),Acronim
 
 ) CC ON CC.DenoID = cass.DenoID AND cass.Acronim = CC.Acronim
@@ -281,7 +279,74 @@ FULL OUTER JOIN @RisStatus ris ON ris.DenoID = cass.DenoID AND ris.Acronim = cas
 FULL OUTER JOIN @MSStatus ms ON ms.DenoID = cass.DenoID AND ms.Acronim = cass.Acronim 
 where ms.Acronim <> 'CHFE'
 
+/****************************	
+*							*
+*	Casse,CC Gettoni Poker	*
+*							*
+*****************************/
+INSERT INTO @RifList
+(
+    ForIncassoTag,
+    Amount
+)
+/*
+DECLARE @gaming DATETIME,	@oggi VARCHAR(16)
 
+SET @gaming = '11.10.2021'
+set 	@oggi = 'OGGI'
+
+--*/
+SELECT 	'CHIPMOV_POK_' + @oggi + '_CAS_' + cast (cass.DenoID AS VARCHAR(16) ) AS ForIncassoTag,
+	(cass.Apertura + CC.Apertura + vers.Versato) AS Amount
+--SELECT a.*,b.*,c.*,d.*
+FROM 
+(	
+/*
+DECLARE @gaming DATETIME,	@oggi VARCHAR(16)
+
+SET @gaming = '11.10.2021'
+set 	@oggi = 'OGGI'
+
+--*/	
+
+	SELECT [ForIncasso].[fn_DenoIndex](ValueTypeID,DenoID) AS DenoID,
+	SUM(Chiusura) + SUM(Ripristino) AS Apertura
+	from [ForIncasso].[fn_GetChipsRipristinati] (@gaming,4)  --CASSE
+	WHERE ValueTypeID = 59--pokerchips
+	GROUP BY [ForIncasso].[fn_DenoIndex](ValueTypeID,DenoID)
+) cass
+FULL OUTER JOIN 
+(
+/*
+DECLARE @gaming DATETIME,	@oggi VARCHAR(16)
+
+SET @gaming = '11.10.2021'
+set 	@oggi = 'OGGI'
+
+--*/	
+	SELECT [ForIncasso].[fn_DenoIndex](ValueTypeID,DenoID) AS DenoID,
+	SUM(Chiusura) + SUM(Ripristino) AS Apertura
+	from [ForIncasso].[fn_GetChipsRipristinati] (@gaming,7)  --CC
+	WHERE ValueTypeID = 59--pokerchips
+	GROUP BY [ForIncasso].[fn_DenoIndex](ValueTypeID,DenoID)
+
+) CC ON CC.DenoID = cass.DenoID 
+FULL OUTER JOIN 
+(
+/*
+DECLARE @gaming DATETIME,	@oggi VARCHAR(16)
+
+SET		@gaming = '11.10.2021'
+set 	@oggi = 'OGGI'
+
+--*/	
+	SELECT [ForIncasso].[fn_DenoIndex](ValueTypeID,DenoID) AS DenoID,
+	SUM([Quantity]) AS Versato
+	from Accounting.vw_AllTransactionDenominations 
+	WHERE ValueTypeID = 59--pokerchips
+	AND DestGamingDate = @gaming AND SourceStockID = 31 --AND OpTypeID
+	GROUP BY [ForIncasso].[fn_DenoIndex](ValueTypeID,DenoID)
+) vers ON CC.DenoID = cass.DenoID 
 
 
 --inserisci il conteggio MS dei chips chf gioco euro

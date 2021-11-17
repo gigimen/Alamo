@@ -14,7 +14,7 @@ RETURNS @ChipsRipristinati TABLE (
 	LifeCycleID			INT,
 	GamingDate			DATETIME,
 	Tag					VARCHAR(16),
-	Denomination		float,
+	Denomination		FLOAT,
 	DenoID				INT, 
 	ValueTypeID			INT, 
 	ValueTypeName		VARCHAR(32),
@@ -33,7 +33,7 @@ BEGIN
 
 select * from [ForIncasso].[fn_GetChipsRipristinati] ('1.12.2020',1) order by ValueTypeID,DenoID
 select * from [ForIncasso].[fn_GetChipsRipristinati] ('8.30.2020',2) order by ValueTypeID,DenoID
-select * from [ForIncasso].[fn_GetChipsRipristinati] ('12.4.2019',4) order by ValueTypeID,DenoID
+select * from [ForIncasso].[fn_GetChipsRipristinati] ('11.10.2021',4) order by ValueTypeID,DenoID
 select * from [ForIncasso].[fn_GetChipsRipristinati] ('2.10.2019',7) order by ValueTypeID,DenoID
 
 */
@@ -99,10 +99,10 @@ SELECT
 	
 declare     @gaming DATETIME,
 	@StockTypeID INT
-
+    
 set @gaming = '1.12.2020'
 set	@StockTypeID = 1
-*/
+--*/
 
 DECLARE @denos TABLE (
 DenoID INT, Denomination FLOAT,ValueTypeName VARCHAR(32),ValueTypeID INT, Acronim VARCHAR(3),CurrencyID INT,
@@ -121,12 +121,48 @@ INSERT INTO @denos
 SELECT 
 	DenoID,
 	Denomination,
+	--FName,
 	ValueTypeID,
 	ValueTypeName, 
 	CurrencyAcronim,
 	CurrencyID
 FROM CasinoLayout.vw_AllDenominations 
-WHERE DenoID IN(1,2,3,4,5,6,7,8,9,78,128,129,130,131,132,133,134,135,136,195,196,197,198,199,200,201,202,203)  
+WHERE DenoID IN(
+--chips CHF
+1,2,3,4,5,6,7,8,9,
+--lucky chips
+78,
+--chips gioco euro
+128,129,130,131,132,133,134,135,136,
+--gettoni euro
+195,196,197,198,199,200,201,202,203
+)  
+
+--starting from 11.1.2021 we handle also poker chips
+IF @gaming > '11.1.2021'
+
+	INSERT INTO @denos
+	(
+		DenoID,
+		Denomination,
+		ValueTypeID,
+		ValueTypeName, 
+		Acronim,
+		CurrencyID
+	)
+	SELECT 
+		DenoID,
+		Denomination,
+		--FName,
+		ValueTypeID,
+		ValueTypeName, 
+		CurrencyAcronim,
+		CurrencyID
+	FROM CasinoLayout.vw_AllDenominations 
+	WHERE DenoID IN(
+	--gettoni poker
+	209,210,211,212,213
+	)  
 
 --SELECT d.DenoID FROM @Denos d
 
@@ -163,7 +199,7 @@ SELECT
 	--if we did not ripirstinated the last GamingDate take it from the today ripsristino
 	--valid for Stocks opened or reopened after being emptied
 	CASE WHEN chiu.RipristinoTRID IS NOT NULL THEN ISNULL(rip.Quantity,0) ELSE ISNULL(rip2.Quantity,0) END AS Ripristino
-	FROM @denos d
+FROM @denos d
 	CROSS JOIN Accounting.fn_GetStockLifeCycleInfo (@gaming,@StockTypeID) s
 	INNER JOIN [Accounting].[vw_AllChiusuraConsegnaRipristino] c ON c.LifeCycleID = s.LastLFID 
 	LEFT OUTER JOIN Accounting.vw_AllChiusuraConsegnaDenominations chiu ON chiu.LifeCycleID = s.LastLFID AND chiu.DenoID = d.DenoID
@@ -171,7 +207,7 @@ SELECT
 
 
 
-	--this is beacuse we ripristinate the stock fom scratch and not from a previuos Chiusura
+	--this is because we ripristinate the stock fom scratch and not from a previuos Chiusura
 	LEFT OUTER JOIN [Accounting].[vw_AllTransactionDenominations] rip2 on rip2.SourceStockTypeID = 2 --source is a minstock
 	AND d.DenoID = rip2.DenoID 
 	AND rip2.SourceGamingDate = @gaming  --ripristinated today

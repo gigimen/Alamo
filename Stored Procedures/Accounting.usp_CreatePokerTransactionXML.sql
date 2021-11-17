@@ -13,13 +13,16 @@ CREATE PROCEDURE [Accounting].[usp_CreatePokerTransactionXML]
 @sourceLifeCycleID	INT			OUTPUT	,
 @TransID			INT			OUTPUT  ,
 @TransTimeLoc		DATETIME	OUTPUT  ,
-@TransTimeUTC		DATETIME	OUTPUT  
+@TransTimeUTC		DATETIME	OUTPUT  ,
+@pending			INT			OUTPUT
 AS
 
-DECLARE @gamingdate			DATETIME,
-@ret				INT
+DECLARE @gamingdate	DATETIME,
+@ret				INT,
+@closeTable			BIT
 
 set @ret = 0
+SET @closeTable = 0
 
 --make sure the @DestLifeCycleID correspond to the CC
 SELECT @gamingdate = GamingDate 
@@ -37,16 +40,24 @@ IF NOT EXISTS
 select StockID from [CasinoLayout].[Stocks] where StockID = @sourceStockID AND stocktypeID = 23
 )
 begin
-	raiserror('StockID (%d) is not a pocker table',16,1,@sourceStockID)
+	raiserror('StockID (%d) is not a poker table',16,1,@sourceStockID)
 	return(1)
 end
 
-SELECT @sourceLifeCycleID = lf.LifeCycleID FROM Accounting.tbl_LifeCycles lf
+SELECT @sourceLifeCycleID = lf.LifeCycleID 
+FROM Accounting.tbl_LifeCycles lf
 WHERE lf.GamingDate = @gamingdate AND lf.StockID = @sourceStockID
 
 --make sure the SourceLifeCycleID exists
 if @sourceLifeCycleID is null 
 BEGIN
+
+	IF @credit = 1
+	BEGIN
+		raiserror('StockID (%d) is not open: credit not possible!',16,1,@sourceStockID)
+		return(1)
+    END
+
 	--we have to open the lifecycle
 	declare @stockLFSSID INT
 
@@ -63,29 +74,41 @@ BEGIN
 			@TransTimeUTC output
 	IF @ret <> 0
 		RETURN @ret
+	set @pending = 0
 END
-ELSE
+ELSE 
 BEGIN
-	--make sure we don't have already 2 pending fill for that pocker table
-	DECLARE @pend INT
+	--make sure we don't have already 1 pending fill for that pocker table
 	
-	SELECT --@pend = --ISNULL(COUNT(transactionID),0) ,
-		SUM(CASE WHEN t.OpTypeID = 1 THEN 1 ELSE 0 END) - SUM(CASE WHEN t.OpTypeID = 4 THEN 1 ELSE 0 END) 
-	FROM Accounting.tbl_Transactions t 
-	WHERE t.SourceLifeCycleID = @sourceLifeCycleID 
-	AND t.TrCancelID IS NULL
+	SELECT @pending = Pending
+	FROM Accounting.vw_PokerCreditFills
+	WHERE LifeCycleID = @sourceLifeCycleID 
 
-	IF @pend > 2
-	BEGIN
- 		raiserror('Il tavolo ha già una consegna pendente',16,1)
-		return(1)   
+	IF @credit = 0 --in caso di fill
+	begin
+		IF @pending >= 2
+		BEGIN
+ 			raiserror('Il tavolo ha già una consegna pendente',16,1)
+			return(1)   
+		END
 	END
-
+	ELSE
+	BEGIN
+		IF @pending = 1
+			SET @closeTable = 1
+    END
 END
+
 
 
 /*
 
+IF @credit = 1 AND @closeTable = 1
+BEGIN
+ 			raiserror('Il tavolo verrà chiuso',16,1)
+			return(1)   
+END
+RETURN 0
 declare @t as varchar(max)
 set @t = '<ROOT>
 <DENO denoid="1" qty="0" exrate="1.58" CashInbound="1" />
@@ -113,7 +136,7 @@ from @XML.nodes('ROOT/DENO') as T(N)
 */
 
 
-BEGIN TRANSACTION trn_CreatePockerFill
+BEGIN TRANSACTION trn_CreatePokerTransaction
 
 BEGIN TRY 
 
@@ -128,8 +151,8 @@ BEGIN TRY
 			DestLifeCycleID,
 			SourceUserAccessID,
 			SourceTime) 
-			values(
-				1		, --ACCONTO == FILL
+	values(
+				CASE WHEN @credit = 1 THEN 4 ELSE 1 end	, --ACCONTO == FILL
 				@sourceLifeCycleID		,
 				7	,		--CC StockTypeID
 				46	,		--CC StockID
@@ -144,7 +167,6 @@ BEGIN TRY
 	IF @values IS NOT NULL AND LEN(@values) > 0
 	BEGIN
 		DECLARE @XML XML = @values
-
 
 		--	print 'inserting new value'
 		INSERT INTO Accounting.tbl_TransactionValues 
@@ -163,11 +185,34 @@ BEGIN TRY
 	-- return SnapshotTime in local hour
 	SET @TransTimeLoc = GeneralPurpose.fn_UTCToLocal(1,@TransTimeUTC)
 
-	COMMIT TRANSACTION trn_CreatePockerFill
+
+	IF @credit = 1 AND @closeTable = 1
+	BEGIN
+		--create the Chiusura snapshot
+		insert into Accounting.tbl_Snapshots
+			(
+				LifeCycleID,
+				UserAccessID,
+				SnapshotTypeID,
+				SnapshotTime,
+				SnapshotTimeLoc
+			)
+		VALUES
+			(
+				@sourceLifeCycleID,
+				@SourceUAID,
+				3,			--Chiusura snapshot type
+				@TransTimeUTC,
+				@TransTimeLoc
+			)
+	
+	END
+
+	COMMIT TRANSACTION trn_CreatePokerTransaction
 
 END TRY  
 BEGIN CATCH  
-	ROLLBACK TRANSACTION trn_CreatePockerFill	
+	ROLLBACK TRANSACTION trn_CreatePokerTransaction	
 	SET @ret = ERROR_NUMBER()
 	DECLARE @dove AS VARCHAR(50)
 	SELECT @dove = OBJECT_SCHEMA_NAME(@@PROCID)+'.'+OBJECT_NAME(@@PROCID)

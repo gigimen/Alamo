@@ -196,7 +196,7 @@ begin
 				@sub = @note,
 				@bod = @body, --N'test del gruppo ramclear',
 				@rec = N'ReportAlamo@casinomendrisio.ch',
-				@from = 'sr-alamo@cmendrisio.office.ch'
+				@from = 'sr-alamo@casinomendrisio.ch'
 
 	END --@EuroValueTypeID
 

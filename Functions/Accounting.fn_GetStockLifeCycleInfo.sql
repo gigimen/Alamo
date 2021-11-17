@@ -46,9 +46,9 @@ select * from  [Accounting].[fn_GetStockLifeCycleInfo]('12.5.2019',4)
 DECLARE @gaming DATETIME,
 	@stockTypeID INT
 
-SET @gaming = '6.23.2019'
+SET @gaming = '11.9.2019'
 set @stockTypeID = 1
-
+select * from [Accounting].[fn_GetLastLifeCycleByStockType](@gaming,@stockTypeID)
 
 --*/
 
@@ -100,7 +100,7 @@ select
 	RIP.TransactionID as MyRipTransID,
 	RIP.SourceGamingDate as MyRipSourceGamingDate,
 	RIP.SourceLifeCycleID as MYRipSourceLifeCycleID,
-	RIP.DestTimeLoc as OraApertura,
+	r.AperturaTime as OraApertura,
 	prev.GamingDate as PrevGamingDate,
 	prev.LifeCycleID as PrevLifeCycleID,
 	CON.TransactionID as PrevConTransactionID

@@ -19,13 +19,6 @@ begin
 	delete from Accounting.tbl_TransactionValues where TransactionID  = @transID
 
 	delete FROM FloorActivity.tbl_TransactionModifications where TransactionID = @transID 
-
-	UPDATE [Accounting].[tbl_PockerFillsCredits]
-	SET [FK_CreditTransID] = NULL
-	WHERE [FK_CreditTransID] =  @transID 
-
-	delete FROM [Accounting].[tbl_PockerFillsCredits] where [FK_FillTransID] = @transID AND [FK_CreditTransID] IS null
-	
 	delete from Accounting.tbl_Transactions WHERE TransactionID = @transID 
 
 

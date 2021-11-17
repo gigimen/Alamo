@@ -7,6 +7,7 @@ GO
 
 
 
+
 CREATE VIEW [FloorActivity].[vw_AllModifications]
 WITH SCHEMABINDING
 AS
@@ -18,6 +19,7 @@ SELECT  'Modified Transaction' AS cosa,
 	CASE WHEN CasinoLayout.OperationTypes.OpTypeID = 5 THEN Accounting.tbl_Transactions.DestLifeCycleID ELSE Accounting.tbl_LifeCycles.LifeCycleid END AS LifeCycleid, 
 	Accounting.tbl_LifeCycles.GamingDate,	
 	CasinoLayout.OperationTypes.FName AS OperationName, 
+	vt.FName AS ValueTypeName,
 	den.FDescription AS Denomination,
 	m.DenoID,
 	m.CashInbound,
@@ -28,6 +30,7 @@ SELECT  'Modified Transaction' AS cosa,
 	OWNSites.ComputerName
 FROM FloorActivity.tbl_TransactionModifications m
 	INNER JOIN CasinoLayout.tbl_Denominations den ON den.DenoID = m.DenoID
+    INNER JOIN CasinoLayout.tbl_ValueTypes vt ON vt.ValueTypeID = den.ValueTypeID	
     INNER JOIN Accounting.tbl_Transactions ON Accounting.tbl_Transactions.TransactionID = m.TransactionID	
     INNER JOIN CasinoLayout.OperationTypes ON CasinoLayout.OperationTypes.OpTypeID = Accounting.tbl_Transactions.OpTypeID
     INNER JOIN Accounting.tbl_LifeCycles ON Accounting.tbl_LifeCycles.LifeCycleID = Accounting.tbl_Transactions.SourceLifeCycleID
@@ -45,6 +48,7 @@ SELECT  'Modified Customer Transaction' AS cosa,
 	Snoopy.tbl_CustomerTransactions.SourceLifeCycleID AS LifeCycleid, 
 	Accounting.tbl_LifeCycles.GamingDate,	
 	CasinoLayout.OperationTypes.FName AS OperationName, 
+	vt.FName AS ValueTypeName,
 	den.FDescription AS Denomination,
 	m.DenoID,
 	m.CashInbound,
@@ -55,6 +59,7 @@ SELECT  'Modified Customer Transaction' AS cosa,
 	OWNSites.ComputerName
 FROM FloorActivity.tbl_CustomerTransactionModifications m
 	INNER JOIN CasinoLayout.tbl_Denominations den ON den.DenoID = m.DenoID
+    INNER JOIN CasinoLayout.tbl_ValueTypes vt ON vt.ValueTypeID = den.ValueTypeID	
     INNER JOIN Snoopy.tbl_CustomerTransactions ON Snoopy.tbl_CustomerTransactions.CustomerTransactionID = m.CustomerTransactionID	
     INNER JOIN CasinoLayout.OperationTypes ON CasinoLayout.OperationTypes.OpTypeID = Snoopy.tbl_CustomerTransactions.OpTypeID
     INNER JOIN Accounting.tbl_LifeCycles ON Accounting.tbl_LifeCycles.LifeCycleID =Snoopy.tbl_CustomerTransactions.SourceLifeCycleID
@@ -71,6 +76,7 @@ SELECT  'Modified Snapshot' AS cosa,
 	Accounting.tbl_LifeCycles.LifeCycleid, 
 	Accounting.tbl_LifeCycles.GamingDate,	
 	CasinoLayout.SnapshotTypes.FName AS OperationName, 
+	vt.FName AS ValueTypeName,
 	den.FDescription AS Denomination,
 	m.DenoID,
 	NULL AS CashInbound,
@@ -81,6 +87,7 @@ SELECT  'Modified Snapshot' AS cosa,
 	OWNSites.ComputerName
 FROM    FloorActivity.tbl_SnapshotModifications m
 	INNER JOIN CasinoLayout.tbl_Denominations den ON den.DenoID = m.DenoID
+    INNER JOIN CasinoLayout.tbl_ValueTypes vt ON vt.ValueTypeID = den.ValueTypeID	
     INNER JOIN Accounting.tbl_Snapshots ON Accounting.tbl_Snapshots.LifecycleSnapshotID = m.LifecycleSnapshotID	
     INNER JOIN CasinoLayout.SnapshotTypes ON CasinoLayout.SnapshotTypes.SnapshotTypeID = Accounting.tbl_Snapshots.SnapshotTypeID
     INNER JOIN Accounting.tbl_LifeCycles ON Accounting.tbl_LifeCycles.LifeCycleID = Accounting.tbl_Snapshots.LifeCycleID
@@ -97,6 +104,7 @@ SELECT  'Modified Progress' AS cosa,
 	Accounting.tbl_LifeCycles.LifeCycleid, 
 	Accounting.tbl_LifeCycles.GamingDate,	
 	'Progress' AS OperationName, 
+	vt.FName AS ValueTypeName,
 	den.FDescription AS Denomination,
 	m.DenoID,
 	NULL AS CashInbound,
@@ -107,6 +115,7 @@ SELECT  'Modified Progress' AS cosa,
 	OWNSites.ComputerName
 FROM FloorActivity.tbl_ProgressModifications m
 	INNER JOIN CasinoLayout.tbl_Denominations den ON den.DenoID = m.DenoID
+    INNER JOIN CasinoLayout.tbl_ValueTypes vt ON vt.ValueTypeID = den.ValueTypeID	
     INNER JOIN Accounting.tbl_Progress p ON p.DenoID = m.denoID AND p.LifeCycleID = m.LifeCycleID AND p.StateTime = m.StateTime
     INNER JOIN Accounting.tbl_LifeCycles ON Accounting.tbl_LifeCycles.LifeCycleID = p.LifeCycleID
     INNER JOIN CasinoLayout.Stocks sS ON Accounting.tbl_LifeCycles.StockID = sS.StockID
@@ -122,6 +131,7 @@ SELECT  'Modified Conteggi' AS cosa,
 	0 AS LifeCycleid, 
 	con.GamingDate,	
 	'Conteggio ' + sS.Tag AS OperationName, 
+	vt.FName AS ValueTypeName,
 	den.FDescription AS Denomination,
 	m.DenoID,
 	NULL AS CashInbound,
@@ -132,6 +142,7 @@ SELECT  'Modified Conteggi' AS cosa,
 	OWNSites.ComputerName
 FROM [FloorActivity].[tbl_ConteggioValuesModifications] m
 	INNER JOIN CasinoLayout.tbl_Denominations den ON den.DenoID = m.DenoID
+    INNER JOIN CasinoLayout.tbl_ValueTypes vt ON vt.ValueTypeID = den.ValueTypeID	
 	INNER JOIN [FloorActivity].[tbl_ConteggiModifications] cm ON cm.ModID = m.ModID
 	INNER JOIN Accounting.tbl_Conteggi con ON con.ConteggioID = cm.ConteggioID
     INNER JOIN CasinoLayout.Stocks sS ON sS.StockID = m.StockID

@@ -12,7 +12,7 @@ AS
 /*
 
 declare @gaming			datetime
-set @gaming = '6.28.2019'
+set @gaming = '11.10.2021'
 
 execute [ForIncasso].[usp_GetTischeabrechnungSummary] @gaming	
 
@@ -58,7 +58,7 @@ INSERT INTO @t
 execute [ForIncasso].[usp_GetTischeAbrechnung] @gaming,@EuroRate OUTPUT
 
 
---SELECT * FROM @t
+--SELECT * FROM @t ORDER BY CurrencyID,Tag
 
 INSERT INTO @Summary(ForIncassoTag,Amount)
 select 'TAVOLI_APERTURA_CHF',isnull(sum(Apertura			),0) as Amount from @t where CurrencyID = 4
@@ -133,6 +133,9 @@ INSERT INTO @Summary(ForIncassoTag,Amount)
 select 'TAVOLI_SB_BSE_EUR',ISNULL(sum(Chiusura + CashBox - Apertura + Credits - Fills			),0) as Amount from @t where CurrencyID = 0 and LEFT(Tag,2) = 'SB'
 
 INSERT INTO @Summary(ForIncassoTag,Amount)
+select 'TAVOLI_PK_BSE_EUR',ISNULL(sum(Chiusura + CashBox - Apertura + Credits - Fills			),0) as Amount from @t where CurrencyID = 0 and LEFT(Tag,2) = 'PK'
+
+INSERT INTO @Summary(ForIncassoTag,Amount)
 select 'TAVOLI_AR_TRONC_CHF',isnull(sum(Tronc	),0) as Amount from @t where CurrencyID = 4 and LEFT(Tag,2) = 'AR'
 
 INSERT INTO @Summary(ForIncassoTag,Amount)
@@ -162,6 +165,8 @@ select 'TAVOLI_SB_TRONC_CHF',isnull(sum(TRONC	),0) as Amount from @t where Curre
 INSERT INTO @Summary(ForIncassoTag,Amount)
 select 'TAVOLI_SB_TRONC_EUR',isnull(sum(TRONC	),0) as Amount from @t where CurrencyID = 0 and LEFT(Tag,2) = 'SB'
 
+INSERT INTO @Summary(ForIncassoTag,Amount)
+select 'TAVOLI_PK_TRONC_EUR',isnull(sum(TRONC	),0) as Amount from @t where CurrencyID = 0 and LEFT(Tag,2) = 'PK'
 /*
 INSERT INTO @Summary(ForIncassoTag,Amount)
 SELECT ForIncassoTag,Amount FROM [ForIncasso].[vw_DailyTavoliTotRipristinato] WHERE GamingDate = @gaming

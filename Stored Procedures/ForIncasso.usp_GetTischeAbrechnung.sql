@@ -17,7 +17,7 @@ DECLARE	@return_value int,
 		@EuroRate float
 
 EXEC	@return_value = [ForIncasso].[usp_GetTischeAbrechnung]
-		@gaming = N'6.1.2019',
+		@gaming = N'11.10.2021',
 		@EuroRate = @EuroRate OUTPUT
 
 SELECT	@EuroRate as N'@EuroRate'

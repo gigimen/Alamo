@@ -20,6 +20,7 @@ BEGIN
 		WHEN @ValueTypeID = 1 THEN @DenoID
 		WHEN @ValueTypeID = 36 THEN @DenoID - 127		
 		WHEN @ValueTypeID = 42 THEN @DenoID - 194
+		WHEN @ValueTypeID = 59 THEN @DenoID - 208
 		ELSE NULL
 	END
 

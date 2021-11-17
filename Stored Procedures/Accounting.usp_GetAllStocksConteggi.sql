@@ -47,7 +47,7 @@ select @EuroRate = IntRate from [Accounting].tbl_CurrencyGamingdateRates
 where CurrencyID = 0 
 AND GamingDate = @gaming
 
-IF @ssTypeID IN(6,7,8,9,10,11,14,15,18,19)  --conteggi tavoli e conteggi tronc tavoli
+IF @ssTypeID IN(6,7,8,9,10,11,14,15,18,19,22,23)  --conteggi tavoli e conteggi tronc tavoli
 BEGIN
 	--count them and return it
 	select @totstocks = count(StockID) from CasinoLayout.Stocks s

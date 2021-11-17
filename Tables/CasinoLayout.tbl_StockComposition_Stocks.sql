@@ -121,14 +121,12 @@ BEGIN
 
 	
 	INSERT INTO [CasinoLayout].[tbl_StockComposition_Stocks]
-			   ([PrimKeyID]
-			   ,[StockCompositionID]
+			   ([StockCompositionID]
 			   ,[StockID]
 			   ,[StartOfUseGamingDate]
 			   ,[EndOfUseGamingDate])
 		 VALUES
-		( @PrimKeyID
-		, @StockCompositionID 
+		( @StockCompositionID 
         , @StockID 
         , @StartOfUseGamingDate 
         , @EndOfUseGamingDate )
