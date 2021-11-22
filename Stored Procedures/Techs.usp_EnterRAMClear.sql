@@ -187,7 +187,7 @@ set	@body = N'<HTML><BODY bgColor=''cyan''>
 EXEC	[GeneralPurpose].[usp_EmailMessage]
 		@sub = @subj,
 		@bod = @body, --N'test del gruppo ramclear',
-		@rec = /*N'lmenegolo@cmendrisio.office.ch',--*/N'ramclear@cmendrisio.office.ch',
+		@rec = /*N'l.menegolo@casinomendrisio.ch',--*/N'ramclear@casinomendrisio.ch',
 		@from = 'tech@casinomendrisio.ch'
 
 return @ret

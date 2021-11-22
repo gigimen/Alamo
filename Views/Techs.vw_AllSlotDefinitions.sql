@@ -10,6 +10,7 @@ GO
 
 
 
+
 CREATE VIEW [Techs].[vw_AllSlotDefinitions]
 AS
 /*
@@ -63,4 +64,12 @@ SELECT d.SlotNr										AS  [SlotNr]
       ,d.[ContatoriElettronici]						AS  [ELECOUNTTYPE]		   
       ,d.[SerialNumber]								AS  [NUM_SERIE]			   	   
   FROM [Techs].[vw_OnlineDRGTMachines] d
+/* 
+--in caso una slot non compare mettiamola a mano
+UNION ALL 
+  SELECT '041-007' AS SlotNr,
+	167913735 AS IpAddr,
+	0.01,'Alfastreet','Pockaj','Lucky07',NULL,0.00,99.99,97.3,'FRANCHI','3819050216-7'
+*/
+
 GO

@@ -47,7 +47,28 @@ select @EuroRate = IntRate from [Accounting].tbl_CurrencyGamingdateRates
 where CurrencyID = 0 
 AND GamingDate = @gaming
 
-IF @ssTypeID IN(6,7,8,9,10,11,14,15,18,19,22,23)  --conteggi tavoli e conteggi tronc tavoli
+IF @ssTypeID IN(--6,7,8,9,10,11,14,15,18,19,22,23,24,25)  --conteggi tavoli e conteggi tronc tavoli
+
+6	,--Conteggio Uscita	Conteggio in uscita dal MainStock
+7	,--Conteggio Box tavoli	Conteggio dei box dei tavoli
+8	,--Conteggio Tronc Tavoli	NULL
+9	,--Conteggio Tronc	NULL
+10	,--Conteggio Gastro	NULL
+11	,--Conteggio Bancomat	NULL
+--12	,--Conteggio ECash	NULL
+--13	,--Conteggio MET	NULL
+14	,--Conteggio Box Sorveglianza	NULL
+15	,--Conteggio Tronc Sorveglianza	NULL
+--17	,--Movimento dotazione gettoni	Acquisto/eliminazione gettoni per LG
+18	,--Conteggio KioskCHF	NULL
+19	,--Conteggio KioskEUR	NULL
+--20	,--Conteggio Tronc Gastro	NULL
+--21	,--VenditaTichange	NULL
+22	,--Conteggio Box Poker	NULL
+23	,--Conteggio Tronc Poker	NULL
+24	,--Conteggio Box Poker Sorveglianza	NULL
+25	--Conteggio Tronc Poker Sorveglianza	NULL
+)
 BEGIN
 	--count them and return it
 	select @totstocks = count(StockID) from CasinoLayout.Stocks s
