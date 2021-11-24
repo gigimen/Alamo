@@ -34,13 +34,9 @@ begin
 end
 
 if @from is null or len(@from) = 0
-	exec msdb.dbo.[sp_send_dbmail]
-	   @recipients  = @rec, 
-	   @subject     = @sub,
-	   @body        = @bod,
-	   @body_format= 'HTML'
-else
-	exec msdb.dbo.[sp_send_dbmail]
+	SET @from = 'sr-alamo@casinomendrisio.ch'
+
+EXEC msdb.dbo.[sp_send_dbmail]
 	   @recipients  = @rec, 
 	   @subject     = @sub,
 	   @body        = @bod,

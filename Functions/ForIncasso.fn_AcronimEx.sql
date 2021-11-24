@@ -22,6 +22,7 @@ BEGIN
 	WHEN @ValueTypeID = 1		THEN 'CHF'
 	WHEN @ValueTypeID = 36		THEN 'CHFE'
 	WHEN @ValueTypeID = 42		THEN 'EUR'
+	WHEN @ValueTypeID = 59		THEN 'POK'
 	ELSE NULL
 	END
 

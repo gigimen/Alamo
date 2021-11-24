@@ -11,7 +11,7 @@ as
 /*
 
 
-execute [GeneralPurpose].[usp_EmailDropStimatoPerOra] 'lmenegolo@cmendrisio.office.ch',null,null
+execute [GeneralPurpose].[usp_EmailDropStimatoPerOra] 'l.menegolo@casinomendrisio.ch',null,null
 
 declare 
 @final bit,

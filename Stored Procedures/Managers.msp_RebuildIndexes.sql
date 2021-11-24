@@ -146,7 +146,7 @@ End
 
 
 exec msdb.dbo.[sp_send_dbmail]
-	@recipients                 = 'lmenegolo@cmendrisio.office.ch', 
+	@recipients                 = 'l.menegolo@casinomendrisio.ch', 
 	@subject                    = 'Frammentazione degli indici dopo il REBUILD',
 	@body                       = @body,
 	@query						= @SQL,

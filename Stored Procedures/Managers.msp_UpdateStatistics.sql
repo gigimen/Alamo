@@ -146,7 +146,7 @@ ORDER BY ROW_NUMBER() OVER (ORDER BY ISNULL(STATS_DATE(object_id, st.stats_id),1
 
 
 exec msdb.dbo.[sp_send_dbmail]
-	@recipients                 = 'lmenegolo@cmendrisio.office.ch', 
+	@recipients                 = 'l.menegolo@casinomendrisio.ch', 
 	@subject                    = 'Ricalcolo delle statistiche',
 	@body                       = 'Statistiche sugli indici ricalcolate
 	

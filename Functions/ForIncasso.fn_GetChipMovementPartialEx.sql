@@ -11,11 +11,11 @@ CREATE FUNCTION [ForIncasso].[fn_GetChipMovementPartialEx]
 )
 /*
 
-select * from [ForIncasso].[fn_GetChipMovementPartialEx] ('4.5.2020','IERI')
-select * from [ForIncasso].[fn_GetChipMovementPartialEx] ('4.6.2020','OGGI',1)
+select * from [ForIncasso].[fn_GetChipMovementPartialEx] ('11.21.2021','IERI',0)
+select * from [ForIncasso].[fn_GetChipMovementPartialEx] ('11.22.2021','OGGI',1)
 
 */
-RETURNS @RifList TABLE (ForIncassoTag VARCHAR(32) PRIMARY KEY CLUSTERED, Amount INT)
+RETURNS @RifList TABLE (ForIncassoTag VARCHAR(32) /*PRIMARY KEY CLUSTERED*/, Amount INT)
 --WITH SCHEMABINDING
 AS
 BEGIN
@@ -24,11 +24,14 @@ BEGIN
 select * from  [ForIncasso].[fn_GetChipMovement] ('4.4.2019' ,'OGGI',DEFAULT)
  execute [ForIncasso].[usp_ChipMovement] '5.3.2019' ,'IERI'
  
-
 DECLARE @gaming DATETIME,	@oggi VARCHAR(16)
 
-SET @gaming = '6.23.2019'
+DECLARE @luckyDenoID INT
+
+SET @luckyDenoID = 78
+SET		@gaming = '11.21.2021'
 set 	@oggi = 'OGGI'
+
 
 
 --*/
@@ -99,11 +102,25 @@ GROUP BY [ForIncasso].[fn_DenoIndex](ValueTypeID,DenoID),Acronim
 * perché magari non è ancora chiuso *
 *************************************/
 
+
+/*
+
+
+DECLARE @gaming DATETIME,	@oggi VARCHAR(16)
+
+
+DECLARE @luckyDenoID INT
+
+SET @luckyDenoID = 78
+
+SET		@gaming = '11.22.2021'
+set 	@oggi = 'OGGI'
+--*/
 DECLARE @MSStatus TABLE (DenoID INT, Acronim VARCHAR(4), Amount INT)
 DECLARE @CloseSnapshotID int
 --se MS è stato chiuso usa la funzione [ForIncasso].[fn_GetChipsRipristinati]
 SELECT @CloseSnapshotID = [ForIncasso].[fn_IsMainStockOpen] (@gaming)
-IF @CloseSnapshotID <> 0 --E' chiuso o non è stato aperto: in questo caso prendi i valori dall'ultima chiusura
+IF @CloseSnapshotID > 0 --E' chiuso o non è stato aperto: in questo caso prendi i valori dall'ultima chiusura
 BEGIN
 
 	INSERT INTO @MSStatus
@@ -118,11 +135,12 @@ BEGIN
 
 DECLARE @gaming DATETIME,	@oggi VARCHAR(16)
 
-SET @gaming = '3.18.2020'
+DECLARE @luckyDenoID INT
+
+SET @luckyDenoID = 78
+SET		@gaming = '11.21.2021'
 set 	@oggi = 'OGGI'
-select * from  [ForIncasso].[fn_GetChipsRipristinati] (@gaming,2)
-order by DenoID
---*/	
+
 --*/
 	SELECT 	
 	[ForIncasso].[fn_DenoIndex](ValueTypeID,DenoID) AS DenoID,
@@ -150,7 +168,7 @@ BEGIN
 	WHERE  DenoID NOT IN (@luckyDenoID) --ignore chips gioco euro e lucky
 END
 
-
+--SELECT * FROM @MSStatus
 
 /************************************	
 *									*
@@ -158,11 +176,41 @@ END
 *	temp table						*
 * perché magari non è ancora chiusa *
 *************************************/
+/*
 
+
+
+
+DECLARE @gaming DATETIME,	@oggi VARCHAR(16)
+
+DECLARE @CloseSnapshotID INT
+DECLARE @luckyDenoID INT
+
+SET @luckyDenoID = 78
+
+SET		@gaming = '11.22.2021'
+set 	@oggi = 'OGGI'
+--*/
 DECLARE @RisStatus TABLE (DenoID INT, Acronim VARCHAR(4), Amount INT)
 --se MS è stato chiuso usa la funzione [ForIncasso].[fn_GetChipsRipristinati]
+/*
+
+
+
+
+DECLARE @gaming DATETIME,	@oggi VARCHAR(16)
+
+DECLARE @CloseSnapshotID INT
+
+SET		@gaming = '11.22.2021'
+set 	@oggi = 'OGGI'
+--*/
+
 SELECT @CloseSnapshotID = [ForIncasso].[fn_IsRiservaOpen] (@gaming)
-IF @CloseSnapshotID <> 0 --E' chiuso o non è stato aperto: in questo caso prendi i valori dall'ultima chiusura
+--SELECT @CloseSnapshotID
+
+
+IF @CloseSnapshotID > 0 --E' chiuso o non è stato aperto: in questo caso prendi i valori dall'ultima chiusura
 BEGIN
 
 	INSERT INTO @RisStatus
@@ -175,12 +223,14 @@ BEGIN
 
 
 
+
 DECLARE @gaming DATETIME,	@oggi VARCHAR(16)
 
-SET @gaming = '3.18.2020'
+DECLARE @luckyDenoID INT
+
+SET @luckyDenoID = 78
+SET		@gaming = '11.21.2021'
 set 	@oggi = 'OGGI'
-select * from  [ForIncasso].[fn_GetChipsRipristinati] (@gaming,6)
-order by DenoID
 --*/	
 --*/
 	SELECT 
@@ -207,10 +257,12 @@ BEGIN
 
 DECLARE @gaming DATETIME,	@oggi VARCHAR(16)
 
-SET @gaming = '4.18.2020'
+DECLARE @luckyDenoID INT
+
+SET @luckyDenoID = 78
+SET		@gaming = '11.21.2021'
 set 	@oggi = 'OGGI'
-select * from  [ForIncasso].[fn_GetChipsRipristinati] (@gaming,6)
-order by DenoID
+
 --*/		
 	SELECT 	
 	[ForIncasso].[fn_DenoIndex](ValueTypeID,DenoID) AS DenoID,
@@ -222,7 +274,7 @@ order by DenoID
 END
 
 
-
+--SELECT * FROM @RisStatus
 
 
 /****************************	
@@ -231,122 +283,100 @@ END
 *							*
 *****************************/
 --insert casse,CC,MS e Riserva
-INSERT INTO @RifList
-(
-    ForIncassoTag,
-    Amount
-)
+INSERT INTO @RifList(ForIncassoTag,Amount)
 /*
-
-
 
 
 DECLARE @gaming DATETIME,	@oggi VARCHAR(16)
 
-SET @gaming = '2.10.2020'
+DECLARE @luckyDenoID INT
+
+SET @luckyDenoID = 78
+SET		@gaming = '11.21.2021'
 set 	@oggi = 'OGGI'
 
 --*/
-SELECT 	'CHIPMOV_' + cass.Acronim + '_' + @oggi + '_CAS_' + cast (cass.DenoID AS VARCHAR(16) ) AS ForIncassoTag,
-	(cass.Apertura + CC.Apertura + ms.Amount + ris.Amount) AS Amount
---SELECT a.*,b.*,c.*,d.*
+SELECT 	'CHIPMOV_' + 
+	ISNULL(cass.Acronim,ISNULL(CC.Acronim,ISNULL(ms.Acronim,ISNULL(ris.Acronim,vers.Acronim)))) + 
+	'_' + @oggi + '_CAS_' + 
+	CAST (ISNULL(cass.DenoID,ISNULL(CC.DenoID,ISNULL(ms.DenoID,ISNULL(ris.DenoID,vers.DenoID)))) AS VARCHAR(16) ) AS ForIncassoTag,
+	(ISNULL(cass.Amount,0) + ISNULL(CC.Amount,0) + ISNULL(ms.Amount,0) + ISNULL(ris.Amount,0)+ ISNULL(vers.Amount,0)) AS Amount
+	--,cass.*,CC.*,ms.*,ris.*,vers.*
 FROM 
 (	
 /*
 DECLARE @gaming DATETIME,	@oggi VARCHAR(16)
 
-SET @gaming = '2.10.2020'
+DECLARE @luckyDenoID INT
+
+SET @luckyDenoID = 78
+SET		@gaming = '11.22.2021'
 set 	@oggi = 'OGGI'
+
 
 --*/	
 
 	SELECT [ForIncasso].[fn_DenoIndex](ValueTypeID,DenoID) AS DenoID,Acronim,
-	SUM(Chiusura) + SUM(Ripristino) AS Apertura
+	SUM(Chiusura) + SUM(Ripristino) AS Amount
 	from [ForIncasso].[fn_GetChipsRipristinati] (@gaming,4)  --CASSE
-	WHERE ValueTypeID NOT IN(36)  AND DenoID NOT IN (@luckyDenoID) --ignore chips gioco euro e lucky e poker
+	WHERE ValueTypeID NOT IN(36) AND DenoID NOT IN (@luckyDenoID) --ignore chips gioco euro e lucky
 	GROUP BY [ForIncasso].[fn_DenoIndex](ValueTypeID,DenoID),Acronim
 ) cass
 FULL OUTER JOIN 
 (
+/*
+DECLARE @gaming DATETIME,	@oggi VARCHAR(16)
+
+DECLARE @luckyDenoID INT
+
+SET @luckyDenoID = 78
+SET		@gaming = '11.22.2021'
+set 	@oggi = 'OGGI'
+
+
+--*/		
 	SELECT [ForIncasso].[fn_DenoIndex](ValueTypeID,DenoID) AS DenoID,Acronim,
-	SUM(Chiusura) + SUM(Ripristino) AS Apertura
+	SUM(Chiusura) + SUM(Ripristino) AS Amount
 	from [ForIncasso].[fn_GetChipsRipristinati] (@gaming,7)  --CC
-	WHERE ValueTypeID NOT IN(36)  AND DenoID NOT IN (@luckyDenoID) --ignore chips gioco euro e lucky e poker
+	WHERE ValueTypeID NOT IN(36)  AND DenoID NOT IN (@luckyDenoID) --ignore chips gioco euro e lucky
 	GROUP BY [ForIncasso].[fn_DenoIndex](ValueTypeID,DenoID),Acronim
 
 ) CC ON CC.DenoID = cass.DenoID AND cass.Acronim = CC.Acronim
-FULL OUTER JOIN @RisStatus ris ON ris.DenoID = cass.DenoID AND ris.Acronim = cass.Acronim
-FULL OUTER JOIN @MSStatus ms ON ms.DenoID = cass.DenoID AND ms.Acronim = cass.Acronim 
-where ms.Acronim <> 'CHFE'
-
-/****************************	
-*							*
-*	Casse,CC Gettoni Poker	*
-*							*
-*****************************/
-INSERT INTO @RifList
+FULL OUTER JOIN  
 (
-    ForIncassoTag,
-    Amount
-)
-/*
-DECLARE @gaming DATETIME,	@oggi VARCHAR(16)
-
-SET @gaming = '11.10.2021'
-set 	@oggi = 'OGGI'
-
---*/
-SELECT 	'CHIPMOV_POK_' + @oggi + '_CAS_' + cast (cass.DenoID AS VARCHAR(16) ) AS ForIncassoTag,
-	(cass.Apertura + CC.Apertura + vers.Versato) AS Amount
---SELECT a.*,b.*,c.*,d.*
-FROM 
-(	
-/*
-DECLARE @gaming DATETIME,	@oggi VARCHAR(16)
-
-SET @gaming = '11.10.2021'
-set 	@oggi = 'OGGI'
-
---*/	
-
-	SELECT [ForIncasso].[fn_DenoIndex](ValueTypeID,DenoID) AS DenoID,
-	SUM(Chiusura) + SUM(Ripristino) AS Apertura
-	from [ForIncasso].[fn_GetChipsRipristinati] (@gaming,4)  --CASSE
-	WHERE ValueTypeID = 59--pokerchips
-	GROUP BY [ForIncasso].[fn_DenoIndex](ValueTypeID,DenoID)
-) cass
+	SELECT DenoID,Acronim,Amount
+	FROM @RisStatus 
+	WHERE Acronim <> 'CHFE' --ignora i gettoni gioco euro nella riserva
+)ris ON ris.DenoID = cass.DenoID AND ris.Acronim = cass.Acronim
 FULL OUTER JOIN 
 (
-/*
-DECLARE @gaming DATETIME,	@oggi VARCHAR(16)
-
-SET @gaming = '11.10.2021'
-set 	@oggi = 'OGGI'
-
---*/	
-	SELECT [ForIncasso].[fn_DenoIndex](ValueTypeID,DenoID) AS DenoID,
-	SUM(Chiusura) + SUM(Ripristino) AS Apertura
-	from [ForIncasso].[fn_GetChipsRipristinati] (@gaming,7)  --CC
-	WHERE ValueTypeID = 59--pokerchips
-	GROUP BY [ForIncasso].[fn_DenoIndex](ValueTypeID,DenoID)
-
-) CC ON CC.DenoID = cass.DenoID 
+	SELECT DenoID,Acronim,Amount
+	FROM @MSStatus 
+	WHERE Acronim <> 'CHFE' --ignora i gettoni gioco euro nel MS
+)ms ON ms.DenoID = cass.DenoID AND ms.Acronim = cass.Acronim 
 FULL OUTER JOIN 
+--versamento gettoin poker da MS a CAssa centrale
 (
 /*
 DECLARE @gaming DATETIME,	@oggi VARCHAR(16)
 
-SET		@gaming = '11.10.2021'
+SET		@gaming = '11.21.2021'
 set 	@oggi = 'OGGI'
 
+
 --*/	
-	SELECT [ForIncasso].[fn_DenoIndex](ValueTypeID,DenoID) AS DenoID,
-	SUM([Quantity]) AS Versato
+	SELECT 
+	[ForIncasso].[fn_DenoIndex](ValueTypeID,DenoID) AS DenoID,
+	[ForIncasso].[fn_AcronimEx](ValueTypeID)		AS Acronim,
+	SUM([Quantity]) AS Amount
 	from Accounting.vw_AllTransactionDenominations 
 	WHERE ValueTypeID = 59--pokerchips
 	AND DestGamingDate = @gaming AND SourceStockID = 31 --AND OpTypeID
-	GROUP BY [ForIncasso].[fn_DenoIndex](ValueTypeID,DenoID)
-) vers ON CC.DenoID = cass.DenoID 
+	GROUP BY [ForIncasso].[fn_DenoIndex](ValueTypeID,DenoID),[ForIncasso].[fn_AcronimEx](ValueTypeID)
+) vers ON vers.DenoID = cass.DenoID AND vers.Acronim = cass.Acronim
+
+ORDER BY ForIncassoTag
+
 
 
 --inserisci il conteggio MS dei chips chf gioco euro
@@ -357,11 +387,20 @@ INSERT INTO @RifList
     Amount
 )
 SELECT 
-'CHIPMOV_CHFE_' + @oggi + '_MS_' + CAST(ms.DenoID AS VARCHAR(3)) AS ForIncassoTag,
-ms.Amount + ris.Amount	
-FROM @MSStatus ms
-FULL OUTER JOIN @RisStatus ris ON ris.DenoID = ms.DenoID AND ris.Acronim = ms.Acronim
-WHERE ms.Acronim = 'CHFE'
+'CHIPMOV_CHFE_' + @oggi + '_MS_' + CAST(ISNULL(ms.DenoID,ris.DenoID) AS VARCHAR(3)) AS ForIncassoTag,
+ISNULL(ms.Amount,0) + ISNULL(ris.Amount,0)	
+FROM 
+(
+	SELECT DenoID,Acronim,Amount
+	FROM @RisStatus 
+	WHERE Acronim = 'CHFE' --solo i gettoni gioco euro nella riserva
+)ris 
+FULL OUTER JOIN 
+(
+	SELECT DenoID,Acronim,Amount
+	FROM @MSStatus 
+	WHERE Acronim = 'CHFE' --solo i gettoni gioco euro nel MS
+)ms ON ms.DenoID = ris.DenoID AND ms.Acronim = ris.Acronim 
 
 --insert anche dotazione nel report
 
@@ -373,11 +412,15 @@ INSERT INTO @RifList
 
 /*
 
-
 DECLARE @gaming DATETIME,	@oggi VARCHAR(16)
 
-SET @gaming = '4.6.2020'
+DECLARE @luckyDenoID INT
+
+SET @luckyDenoID = 78
+SET		@gaming = '11.21.2021'
 set 	@oggi = 'OGGI'
+
+
 
 --*/	
 SELECT 
@@ -401,6 +444,16 @@ FROM
 
 
 
+/*
+DECLARE @gaming DATETIME,	@oggi VARCHAR(16)
+
+DECLARE @luckyDenoID INT
+
+SET @luckyDenoID = 78
+SET		@gaming = '11.21.2021'
+set 	@oggi = 'OGGI'
+
+--*/	
 	SELECT  
 		[ForIncasso].[fn_DenoIndex](ValueTypeID,DenoID) AS Deno,
 		[ForIncasso].[fn_AcronimEx](ValueTypeID) AS Acronim,
@@ -412,6 +465,10 @@ FROM
 
 	GROUP BY [ForIncasso].[fn_DenoIndex](ValueTypeID,DenoID),[ForIncasso].[fn_AcronimEx](ValueTypeID)
 ) a
+
+
+
+
 RETURN
 
 END

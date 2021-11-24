@@ -12,7 +12,7 @@ as
 /*
 
 
-execute [GeneralPurpose].[usp_EmailVisitatoriPerCKey]  'lmenegolo@cmendrisio.office.ch',null,null
+execute [GeneralPurpose].[usp_EmailVisitatoriPerCKey]  'l.menegolo@casinomendrisio.ch',null,null
 
 declare 
 @final bit,

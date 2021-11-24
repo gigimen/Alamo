@@ -138,8 +138,12 @@ WHERE DenoID IN(
 195,196,197,198,199,200,201,202,203
 )  
 
---starting from 11.1.2021 we handle also poker chips
-IF @gaming > '11.1.2021'
+DECLARE @firstdayPok DATETIME
+SELECT @firstdayPok = MIN([StartOfUseGamingDate]) FROM [CasinoLayout].[vw_AllStockCompositions]
+WHERE ValueTypeID = 59 --gettoni poker
+AND StockID = 32 --riserva
+-- SELECT @firstdayPok
+IF @gaming >= @firstdayPok
 
 	INSERT INTO @denos
 	(
