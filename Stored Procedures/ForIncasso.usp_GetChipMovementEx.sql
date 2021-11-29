@@ -17,6 +17,7 @@ select ForIncassoTag, Amount from [ForIncasso].[fn_GetChipMovementEx] (@gaming,1
 
 --*/
 --dal 23.8.2021 includi ANCHE LE LUCKY CHIPS
-select ForIncassoTag, Amount from [ForIncasso].[fn_GetChipMovementEx] (@gaming,1)--default)
+--select ForIncassoTag, Amount from [ForIncasso].[fn_GetChipMovementEx] (@gaming,1)--default)
+select ForIncassoTag, Amount from [ForIncasso].[fn_GetChipMovementEx_V2] (@gaming,1)--default)
 
 GO

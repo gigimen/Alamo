@@ -32,11 +32,13 @@ begin
 end
 
 --insert of a new transaction
+/* controll disabilitato perchè abbaimo cancellato il Lifecycyles piu vecchi del 31.12.2018
 if not exists (select LifeCycleID from Accounting.tbl_LifeCycles where StockID = @RegStockID and GamingDate = @RegGamingDate)
 begin
 	raiserror('Invalid StockID (%d) specified for that gaming date',16,1,@RegStockID)
 	return 3
 end
+*/
 if not exists (select UserAccessID from FloorActivity.tbl_UserAccesses where UserAccessID = @UserAccessID)
 begin
 	raiserror('Invalid UserAccessID (%d) specified ',16,1,@UserAccessID)
