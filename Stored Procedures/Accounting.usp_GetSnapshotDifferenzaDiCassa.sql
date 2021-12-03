@@ -145,7 +145,7 @@ IF @ripristinoCHF IS NULL
 IF @ripristinoEUR IS NULL
 	--ripristino without values 
 	SET @ripristinoEUR = 0.0
-
+/*
 PRINT 'Stock :' + @Tag
 PRINT 'Previous Gaming date : ' + CONVERT(VARCHAR,@LastGamingDate,105)
 PRINT '
@@ -154,7 +154,9 @@ PRINT 'AperturaCHF	: ' + STR(@aperturaCHF,12,2)
 PRINT 'RipristinoCHF: ' + STR(@ripristinoCHF,12,2)
 PRINT 'ChiusuraCHF  : ' + STR(@chiusuraCHF,12,2)
 PRINT 'ConsegnaCHF	: ' + STR(@ConsegnaCHF,12,2)
+*/
 SET @DiffCassaCHF = @chiusuraCHF + @ConsegnaCHF - @aperturaCHF - @ripristinoCHF
+/*
 PRINT 'DifferenzaCHF: ' + STR(@DiffCassaCHF,12,2)
 PRINT '
 -----------------EUR---------------------'
@@ -162,8 +164,9 @@ PRINT 'AperturaEUR	: ' + STR(@aperturaEUR,12,2)
 PRINT 'RipristinoEUR: ' + STR(@ripristinoEUR,12,2)
 PRINT 'ChiusuraEUR  : ' + STR(@chiusuraEUR,12,2)
 PRINT 'ConsegnaEUR	: ' + STR(@ConsegnaEUR,12,2)
+*/
 SET @DiffCassaEUR = @chiusuraEUR + @ConsegnaEUR - @aperturaEUR - @ripristinoEUR
-PRINT 'DifferenzaEUR: ' + STR(@DiffCassaEUR,12,2)
+--PRINT 'DifferenzaEUR: ' + STR(@DiffCassaEUR,12,2)
 
 
 select 

@@ -33,7 +33,7 @@ BEGIN
 
 select * from [ForIncasso].[fn_GetChipsRipristinati] ('1.12.2020',1) order by ValueTypeID,DenoID
 select * from [ForIncasso].[fn_GetChipsRipristinati] ('8.30.2020',2) order by ValueTypeID,DenoID
-select * from [ForIncasso].[fn_GetChipsRipristinati] ('11.10.2021',4) order by ValueTypeID,DenoID
+select * from [ForIncasso].[fn_GetChipsRipristinati] ('11.28.2021',7) order by ValueTypeID,DenoID
 select * from [ForIncasso].[fn_GetChipsRipristinati] ('2.10.2019',7) order by ValueTypeID,DenoID
 
 */
@@ -100,8 +100,8 @@ SELECT
 declare     @gaming DATETIME,
 	@StockTypeID INT
     
-set @gaming = '1.12.2020'
-set	@StockTypeID = 1
+set @gaming = '11.28.2021'
+set	@StockTypeID = 7
 --*/
 
 DECLARE @denos TABLE (
@@ -142,7 +142,7 @@ DECLARE @firstdayPok DATETIME
 SELECT @firstdayPok = MIN([StartOfUseGamingDate]) FROM [CasinoLayout].[vw_AllStockCompositions]
 WHERE ValueTypeID = 59 --gettoni poker
 AND StockID = 32 --riserva
--- SELECT @firstdayPok
+--SELECT @firstdayPok
 IF @gaming >= @firstdayPok
 
 	INSERT INTO @denos

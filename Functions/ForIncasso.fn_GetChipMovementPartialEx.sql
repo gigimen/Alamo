@@ -11,11 +11,11 @@ CREATE FUNCTION [ForIncasso].[fn_GetChipMovementPartialEx]
 )
 /*
 
-select * from [ForIncasso].[fn_GetChipMovementPartialEx] ('11.21.2021','IERI',0)
-select * from [ForIncasso].[fn_GetChipMovementPartialEx] ('11.22.2021','OGGI',1)
+select * from [ForIncasso].[fn_GetChipMovementPartialEx] ('11.27.2021','IERI',1)
+select * from [ForIncasso].[fn_GetChipMovementPartialEx] ('11.28.2021','OGGI',1)
 
 */
-RETURNS @RifList TABLE (ForIncassoTag VARCHAR(32) /*PRIMARY KEY CLUSTERED*/, Amount INT)
+RETURNS @RifList TABLE (ForIncassoTag VARCHAR(32) PRIMARY KEY CLUSTERED, Amount INT)
 --WITH SCHEMABINDING
 AS
 BEGIN
@@ -113,7 +113,7 @@ DECLARE @luckyDenoID INT
 
 SET @luckyDenoID = 78
 
-SET		@gaming = '11.22.2021'
+SET		@gaming = '11.28.2021'
 set 	@oggi = 'OGGI'
 --*/
 DECLARE @MSStatus TABLE (DenoID INT, Acronim VARCHAR(4), Amount INT)
@@ -138,7 +138,7 @@ DECLARE @gaming DATETIME,	@oggi VARCHAR(16)
 DECLARE @luckyDenoID INT
 
 SET @luckyDenoID = 78
-SET		@gaming = '11.21.2021'
+SET		@gaming = '11.28.2021'
 set 	@oggi = 'OGGI'
 
 --*/
@@ -188,7 +188,7 @@ DECLARE @luckyDenoID INT
 
 SET @luckyDenoID = 78
 
-SET		@gaming = '11.22.2021'
+SET		@gaming = '11.28.2021'
 set 	@oggi = 'OGGI'
 --*/
 DECLARE @RisStatus TABLE (DenoID INT, Acronim VARCHAR(4), Amount INT)
@@ -259,9 +259,9 @@ DECLARE @gaming DATETIME,	@oggi VARCHAR(16)
 
 DECLARE @luckyDenoID INT
 
-SET @luckyDenoID = 78
+SET		@luckyDenoID = 78
 SET		@gaming = '11.21.2021'
-set 	@oggi = 'OGGI'
+SET 	@oggi = 'OGGI'
 
 --*/		
 	SELECT 	
@@ -316,11 +316,11 @@ set 	@oggi = 'OGGI'
 
 --*/	
 
-	SELECT [ForIncasso].[fn_DenoIndex](ValueTypeID,DenoID) AS DenoID,Acronim,
+	SELECT [ForIncasso].[fn_DenoIndex](ValueTypeID,DenoID) AS DenoID,[ForIncasso].[fn_AcronimEx](ValueTypeID) AS Acronim,
 	SUM(Chiusura) + SUM(Ripristino) AS Amount
 	from [ForIncasso].[fn_GetChipsRipristinati] (@gaming,4)  --CASSE
 	WHERE ValueTypeID NOT IN(36) AND DenoID NOT IN (@luckyDenoID) --ignore chips gioco euro e lucky
-	GROUP BY [ForIncasso].[fn_DenoIndex](ValueTypeID,DenoID),Acronim
+	GROUP BY [ForIncasso].[fn_DenoIndex](ValueTypeID,DenoID),[ForIncasso].[fn_AcronimEx](ValueTypeID)
 ) cass
 FULL OUTER JOIN 
 (
@@ -330,16 +330,16 @@ DECLARE @gaming DATETIME,	@oggi VARCHAR(16)
 DECLARE @luckyDenoID INT
 
 SET @luckyDenoID = 78
-SET		@gaming = '11.22.2021'
+SET		@gaming = '11.28.2021'
 set 	@oggi = 'OGGI'
-
+select *,[ForIncasso].[fn_DenoIndex](ValueTypeID,DenoID) AS DenoID from [ForIncasso].[fn_GetChipsRipristinati] (@gaming,7)
 
 --*/		
-	SELECT [ForIncasso].[fn_DenoIndex](ValueTypeID,DenoID) AS DenoID,Acronim,
+	SELECT [ForIncasso].[fn_DenoIndex](ValueTypeID,DenoID) AS DenoID,[ForIncasso].[fn_AcronimEx](ValueTypeID) AS Acronim,
 	SUM(Chiusura) + SUM(Ripristino) AS Amount
 	from [ForIncasso].[fn_GetChipsRipristinati] (@gaming,7)  --CC
 	WHERE ValueTypeID NOT IN(36)  AND DenoID NOT IN (@luckyDenoID) --ignore chips gioco euro e lucky
-	GROUP BY [ForIncasso].[fn_DenoIndex](ValueTypeID,DenoID),Acronim
+	GROUP BY [ForIncasso].[fn_DenoIndex](ValueTypeID,DenoID),[ForIncasso].[fn_AcronimEx](ValueTypeID)
 
 ) CC ON CC.DenoID = cass.DenoID AND cass.Acronim = CC.Acronim
 FULL OUTER JOIN  
@@ -347,15 +347,15 @@ FULL OUTER JOIN
 	SELECT DenoID,Acronim,Amount
 	FROM @RisStatus 
 	WHERE Acronim <> 'CHFE' --ignora i gettoni gioco euro nella riserva
-)ris ON ris.DenoID = cass.DenoID AND ris.Acronim = cass.Acronim
+)ris ON ris.DenoID = CC.DenoID AND ris.Acronim = CC.Acronim
 FULL OUTER JOIN 
 (
 	SELECT DenoID,Acronim,Amount
 	FROM @MSStatus 
 	WHERE Acronim <> 'CHFE' --ignora i gettoni gioco euro nel MS
-)ms ON ms.DenoID = cass.DenoID AND ms.Acronim = cass.Acronim 
+)ms ON ms.DenoID = CC.DenoID AND ms.Acronim = CC.Acronim 
 FULL OUTER JOIN 
---versamento gettoin poker da MS a CAssa centrale
+--versamento gettoni poker da MS a CAssa centrale
 (
 /*
 DECLARE @gaming DATETIME,	@oggi VARCHAR(16)
@@ -373,7 +373,7 @@ set 	@oggi = 'OGGI'
 	WHERE ValueTypeID = 59--pokerchips
 	AND DestGamingDate = @gaming AND SourceStockID = 31 --AND OpTypeID
 	GROUP BY [ForIncasso].[fn_DenoIndex](ValueTypeID,DenoID),[ForIncasso].[fn_AcronimEx](ValueTypeID)
-) vers ON vers.DenoID = cass.DenoID AND vers.Acronim = cass.Acronim
+) vers ON vers.DenoID = CC.DenoID AND vers.Acronim = CC.Acronim
 
 ORDER BY ForIncassoTag
 
