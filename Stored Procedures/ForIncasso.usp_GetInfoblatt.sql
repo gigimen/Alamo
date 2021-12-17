@@ -46,14 +46,15 @@ SELECT	b.Game
 		,b.TableOpen
 		,b.CashBox
 		--,'F'									AS CashBoxCol
-		,'G'									AS CashBoxCol
+		,'I'									AS CashBoxCol
 		,b.BSE
 		,CASE 
 			WHEN b.Game = 'AR' THEN 'B'
 			WHEN b.Game = 'BJ' THEN 'C'
 			WHEN b.Game = 'PB' THEN 'D'
 			WHEN b.Game = 'UT' THEN 'E'
-			WHEN b.Game = 'SB' THEN 'F'
+			WHEN b.Game = 'PK' THEN 'F'
+			WHEN b.Game = 'SB' THEN 'H'
 		END										AS BSECol
 		,b.Tronc								AS TroncTavoli											
 /*		,CASE 
@@ -64,24 +65,25 @@ SELECT	b.Game
 --			WHEN b.Game = 'SB' THEN 'F'
 		END										AS TroncCol
 */		,CASE 
-			WHEN b.Game = 'AR' THEN 'J'
-			WHEN b.Game = 'BJ' THEN 'K'
-			WHEN b.Game = 'PB' THEN 'L'
-			WHEN b.Game = 'UT' THEN 'M'
-			WHEN b.Game = 'SB' THEN 'N'
+			WHEN b.Game = 'AR' THEN 'L'
+			WHEN b.Game = 'BJ' THEN 'M'
+			WHEN b.Game = 'PB' THEN 'N'
+			WHEN b.Game = 'UT' THEN 'O'
+			WHEN b.Game = 'SB' THEN 'P'
+			WHEN b.Game = 'PK' THEN 'Q'
 		END										AS TroncCol
 		,ISNULL(s.[TotalTronc],0) /*+ ISNULL(tg.Totaltronc,0)*/				AS TroncSala			
 		--,'N' AS TroncsalaCol
-		,'P' AS TroncsalaCol
+		,'S' AS TroncsalaCol
 		,ISNULL(ck.Visite,0)					AS Visite											
 		--,'P' AS VisiteCol
-		,'R' AS VisiteCol
+		,'U' AS VisiteCol
 		,b.FxRate											
 		--,'Q' AS FxRateCol
-		,'S' AS FxRateCol
+		,'V' AS FxRateCol
 		,ISNULL(g.Total,0)						AS Gastro												
 		--,'O' AS GastroCol
-		,'Q' AS GastroCol
+		,'T' AS GastroCol
 FROM
 (
 /*

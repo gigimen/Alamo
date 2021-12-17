@@ -181,7 +181,7 @@ INSERT INTO @Summary(ForIncassoTag,Amount)
 inserisci anche i dati del conteggio
 
 declare @gaming			datetime
-set @gaming = '7.14.2019'
+set @gaming = '12.14.2021'
 --*/
 
 SELECT 

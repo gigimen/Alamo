@@ -6,13 +6,14 @@ GO
 
 
 
+
 CREATE VIEW [GoldenClub].[vw_CarteDaCreare]
 WITH SCHEMABINDING
 AS
 SELECT  
 	gc.GoldenClubCardID
 FROM  GoldenClub.tbl_Cards gc
-WHERE gc.GoldenClubCardID >= 106501 AND gc.GoldenClubCardID < 500000
+WHERE gc.GoldenClubCardID >= 107001 AND gc.GoldenClubCardID < 500000
 
 
 

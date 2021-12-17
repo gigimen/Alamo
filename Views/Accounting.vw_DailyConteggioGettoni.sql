@@ -3,8 +3,6 @@ GO
 SET ANSI_NULLS ON
 GO
 
-
-/****** Script for SelectTopNRows command from SSMS  ******/
 CREATE VIEW [Accounting].[vw_DailyConteggioGettoni]
 WITH SCHEMABINDING
 AS
@@ -16,11 +14,11 @@ where GamingDate = '7.14.2019'
 SELECT 
 	GamingDate,
 	CurrencyID,
-	CurrencyAcronim,
+	CASE WHEN ValueTypeID = 59 THEN 'POK' ELSE CurrencyAcronim END AS CurrencyAcronim,
 	SUM(TotQuantity) AS TotQuantity
   FROM [Accounting].[vw_DailyConteggi]
- WHERE ValueTypeID IN (1,36,42)
+ WHERE ValueTypeID IN (1,36,42,59) --solo gettoni chf,gioco euro, eur e poker
   GROUP BY  GamingDate,
 	CurrencyID,
-	CurrencyAcronim
+	CASE WHEN ValueTypeID = 59 THEN 'POK' ELSE CurrencyAcronim END
 GO

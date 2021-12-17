@@ -2,22 +2,23 @@ SET QUOTED_IDENTIFIER ON
 GO
 SET ANSI_NULLS ON
 GO
-create	VIEW [Accounting].[vw_DailyConteggioPokerChips]
+
+CREATE	VIEW [Accounting].[vw_DailyConteggioPokerChips]
 AS
-select
+SELECT
 		 GamingDate,
 		 DenoID,
 		 Denomination,
 		 ValueTypeName,
 		 ValueTypeID,
 		 DenoName,
-		 sum(Quantity) as Quantity,
+		 SUM(Quantity) AS Quantity,
 		 1.0 AS ExchangeRate --not interested in exchangerate
-		 from  [Accounting].[vw_AllConteggiDenominations]
-		 where ValueTypeId in(59)    --gettoni poker
+		 FROM  [Accounting].[vw_AllConteggiDenominations]
+		 WHERE ValueTypeId IN(59)    --gettoni poker
 		 --and GamingDate = convert(datetime, '%d.%d.%d', 105)
-		 and SnapshotTypeID in (22,23) --avoid counting also conteggi di sorveglianza
-		 group by GamingDate,DenoID,
+		 AND SnapshotTypeID IN (22,23,10,9) --avoid counting also conteggi di sorveglianza
+		 GROUP BY GamingDate,DenoID,
 		 Denomination,
 		 ValueTypeName,
 		 ValueTypeID,
