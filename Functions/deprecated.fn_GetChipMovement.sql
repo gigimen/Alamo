@@ -6,7 +6,7 @@ GO
 
 
 
-CREATE FUNCTION [ForIncasso].[fn_GetChipMovement]
+CREATE FUNCTION [deprecated].[fn_GetChipMovement]
 (
     @gaming DATETIME
 )
@@ -39,7 +39,7 @@ INSERT INTO @RifList
     Amount
 )
 
-SELECT ForIncassoTag,Amount FROM [ForIncasso].[fn_GetChipMovementPartial] (
+SELECT ForIncassoTag,Amount FROM deprecated.fn_GetChipMovementPartial (
    DATEADD(DAY,-1,@gaming)
   ,'IERI')
 
@@ -51,7 +51,7 @@ INSERT INTO @RifList
     Amount
 )
 
-SELECT ForIncassoTag,Amount FROM [ForIncasso].[fn_GetChipMovementPartial] (
+SELECT ForIncassoTag,Amount FROM deprecated.fn_GetChipMovementPartial (
    @gaming
   ,'OGGI')
 

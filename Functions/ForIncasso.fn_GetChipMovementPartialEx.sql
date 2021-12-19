@@ -11,8 +11,8 @@ CREATE FUNCTION [ForIncasso].[fn_GetChipMovementPartialEx]
 )
 /*
 
-select * from [ForIncasso].[fn_GetChipMovementPartialEx] ('12.12.2021','IERI',1)
-select * from [ForIncasso].[fn_GetChipMovementPartialEx] ('12.13.2021','OGGI',1)
+select * from [ForIncasso].[fn_GetChipMovementPartialEx] ('11.27.2021','IERI',1)
+select * from [ForIncasso].[fn_GetChipMovementPartialEx] ('11.28.2021','OGGI',1)
 
 */
 RETURNS @RifList TABLE (ForIncassoTag VARCHAR(32) PRIMARY KEY CLUSTERED, Amount INT)
@@ -297,10 +297,10 @@ set 	@oggi = 'OGGI'
 
 --*/
 SELECT 	'CHIPMOV_' + 
-	ISNULL(cass.Acronim,ISNULL(CC.Acronim,ISNULL(ms.Acronim,ris.Acronim))) + 
+	ISNULL(cass.Acronim,ISNULL(CC.Acronim,ISNULL(ms.Acronim,ISNULL(ris.Acronim,vers.Acronim)))) + 
 	'_' + @oggi + '_CAS_' + 
-	CAST (ISNULL(cass.DenoID,ISNULL(CC.DenoID,ISNULL(ms.DenoID,ris.DenoID))) AS VARCHAR(16) ) AS ForIncassoTag,
-	(ISNULL(cass.Amount,0) + ISNULL(CC.Amount,0) + ISNULL(ms.Amount,0) + ISNULL(ris.Amount,0) ) AS Amount
+	CAST (ISNULL(cass.DenoID,ISNULL(CC.DenoID,ISNULL(ms.DenoID,ISNULL(ris.DenoID,vers.DenoID)))) AS VARCHAR(16) ) AS ForIncassoTag,
+	(ISNULL(cass.Amount,0) + ISNULL(CC.Amount,0) + ISNULL(ms.Amount,0) + ISNULL(ris.Amount,0)+ ISNULL(vers.Amount,0)) AS Amount
 	--,cass.*,CC.*,ms.*,ris.*,vers.*
 FROM 
 (	
@@ -354,31 +354,8 @@ FULL OUTER JOIN
 	FROM @MSStatus 
 	WHERE Acronim <> 'CHFE' --ignora i gettoni gioco euro nel MS
 )ms ON ms.DenoID = CC.DenoID AND ms.Acronim = CC.Acronim 
-
-
-
---inserisci separatemante versamento gettoni poker da MS a CAssa centrale
-INSERT INTO @RifList(ForIncassoTag,Amount)
-/*
-
-
-DECLARE @gaming DATETIME,	@oggi VARCHAR(16)
-
-DECLARE @luckyDenoID INT
-
-SET @luckyDenoID = 78
-SET		@gaming = '12.13.2021'
-set 	@oggi = 'OGGI'
-
---*/
-
-SELECT 	'CHIPMOV_' + 
-	vers.Acronim + 
-	'_' + @oggi + '_VER_' + 
-	CAST (vers.DenoID AS VARCHAR(16) ) AS ForIncassoTag,
-	ISNULL(vers.Amount,0) AS Amount
-	--,cass.*,CC.*,ms.*,ris.*,vers.*
-FROM 
+FULL OUTER JOIN 
+--versamento gettoni poker da MS a CAssa centrale
 (
 /*
 DECLARE @gaming DATETIME,	@oggi VARCHAR(16)
@@ -397,7 +374,7 @@ set 	@oggi = 'OGGI'
 	AND SourceGamingDate = @gaming AND SourceStockID = 31 AND OpTypeID = 4
 	AND DestLifeCycleID IS NOT NULL --onlz if accepted bz cassa centra;e
 	GROUP BY [ForIncasso].[fn_DenoIndex](ValueTypeID,DenoID),[ForIncasso].[fn_AcronimEx](ValueTypeID)
-) vers 
+) vers ON vers.DenoID = CC.DenoID AND vers.Acronim = CC.Acronim
 
 ORDER BY ForIncassoTag
 

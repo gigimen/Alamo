@@ -166,14 +166,14 @@ begin
  	BEGIN
 
 		--PRINT	'Internal rate is ' + convert(varchar(32),@IntRate)
-
+		
 		DECLARE @body varchar(MAX)
 		set	@body = N'<HTML><BODY bgColor=''cyan''>
 		<CENTER><font color=#996666 size=28pt> Cambio Euro </font>
 		<br>											
-		<br>Data e Ora: ' + convert(nvarchar(16),GETDATE(),0) + '
+		<br>Data e Ora: ' + convert(nvarchar(32),GETDATE(),100) + '
 		<br>											
-		<br>GamingDate: ' + CONVERT(NVARCHAR(16),@TrolleyGamingdate,105) + '											
+		<br>GamingDate: ' + CONVERT(NVARCHAR(32),@TrolleyGamingdate,105) + '											
 		<br>											
 		<table bgcolor=#e4e4e4 border=1>
 		<font color=''blue'' size=18pt>	

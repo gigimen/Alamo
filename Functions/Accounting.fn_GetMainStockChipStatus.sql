@@ -222,7 +222,7 @@ set @gamingdate = '6.6.2020'
 ) cont on cont.DenoID = sc.DenoID
     
 WHERE s.LifeCycleID = @LifeCycleID
-AND d.ValueTypeID IN(1,36,42,59) --solo gettoni chf,gioco euro, euro e poker
+AND d.ValueTypeID IN(1,36,42)
 
 
 RETURN
