@@ -34,7 +34,7 @@ BEGIN
 select * from [ForIncasso].[fn_GetChipsRipristinati] ('1.12.2020',1) order by ValueTypeID,DenoID
 select * from [ForIncasso].[fn_GetChipsRipristinati] ('8.30.2020',2) order by ValueTypeID,DenoID
 select * from [ForIncasso].[fn_GetChipsRipristinati] ('11.28.2021',7) order by ValueTypeID,DenoID
-select * from [ForIncasso].[fn_GetChipsRipristinati] ('2.10.2019',7) order by ValueTypeID,DenoID
+select * from [ForIncasso].[fn_GetChipsRipristinati] ('12.18.2021',6) order by ValueTypeID,DenoID
 
 */
 
@@ -164,6 +164,8 @@ IF @gaming >= @firstdayPok
 		CurrencyID
 	FROM CasinoLayout.vw_AllDenominations 
 	WHERE DenoID IN(
+	--gettoni poker chf da 25
+	216,
 	--gettoni poker
 	209,210,211,212,213
 	)  

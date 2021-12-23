@@ -94,7 +94,7 @@ FROM
 		GROUP BY [CurrencyAcronim]
 		*/
 		SELECT 'CASSE_' + CASE WHEN ValueTypeID = 59 THEN 'POK' ELSE [Acronim] END + '_GETTONI' AS ForIncassoTag,
-			  SUM([Conteggio]) - SUM(Apertura) AS Amount 
+			  SUM([Conteggio]) - SUM(Apertura) - SUM(verspoker) AS Amount 
 		FROM [ForIncasso].[fn_GetChiusureCashCasse]  (@gaming)
 		WHERE ValueTypeID IN (1,36,42,59)
 		GROUP BY CASE WHEN ValueTypeID = 59 THEN 'POK' ELSE [Acronim] END
