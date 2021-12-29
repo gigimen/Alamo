@@ -27,7 +27,7 @@ END
 
 DECLARE @gaming DATETIME
 
-SET @gaming = '10.17.2019'
+SET @gaming = '12.27.2021'
 
 
 execute [ForIncasso].[usp_GetAperturaTesoroEx]   @gaming
@@ -74,6 +74,19 @@ INSERT INTO @StockStatus
     RIPTransactionID,
     OraChiusura
 )
+/*
+
+DECLARE @gaming DATETIME
+
+SET @gaming = '12.27.2021'
+
+
+declare @giornoprima datetime
+
+set @giornoprima =  dateadd(day,-1,@gaming)
+
+
+--*/
 select 
 
 	Tag						,

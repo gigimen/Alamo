@@ -12,7 +12,8 @@ CREATE TABLE [Snoopy].[tbl_Assegni]
 [CreditiGiocoRate] [float] NOT NULL CONSTRAINT [DF_tbl_Assegni_CreditiGiocoRate] DEFAULT ((1)),
 [FK_ControlUserAccessID] [int] NULL,
 [ControlTimeStampUTC] [datetime] NULL,
-[ControlDate] [datetime] NULL
+[ControlDate] [datetime] NULL,
+[NettoIncassatoCents] [int] NULL
 ) ON [PRIMARY]
 GO
 ALTER TABLE [Snoopy].[tbl_Assegni] ADD CONSTRAINT [PK_tbl_Assegni] PRIMARY KEY CLUSTERED  ([PK_AssegnoID]) ON [PRIMARY]

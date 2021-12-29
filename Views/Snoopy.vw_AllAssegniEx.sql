@@ -10,6 +10,7 @@ GO
 
 
 
+
 CREATE VIEW [Snoopy].[vw_AllAssegniEx]
 WITH SCHEMABINDING
 AS
@@ -19,6 +20,7 @@ SELECT
 	a.CentaxCode, 
 	a.FK_BankAccountID						AS	BankAccountID,
 	a.FK_ContropartitaID					AS ContropartitaID,
+	a.NettoIncassatoCents,
 	cp.FK_CashIn_IDCauseID					AS CauseID,
 	a.Commissione			,
 	a.CreditiGiocoRate		,

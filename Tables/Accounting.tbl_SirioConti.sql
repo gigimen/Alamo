@@ -1,6 +1,6 @@
 CREATE TABLE [Accounting].[tbl_SirioConti]
 (
-[conto] [int] NOT NULL,
+[conto] [varchar] (32) COLLATE Latin1_General_CI_AS NOT NULL,
 [indice] [int] NOT NULL,
 [giustif] [nvarchar] (50) COLLATE Latin1_General_CI_AS NULL,
 [descr] [nvarchar] (50) COLLATE Latin1_General_CI_AS NULL,
