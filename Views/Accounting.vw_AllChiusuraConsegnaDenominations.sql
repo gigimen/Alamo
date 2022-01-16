@@ -9,6 +9,7 @@ GO
 
 
 
+
 CREATE VIEW [Accounting].[vw_AllChiusuraConsegnaDenominations]
 WITH SCHEMABINDING
 AS
@@ -97,6 +98,7 @@ ON rip.DestStockID = lf.StockID
 --the ripristion has been created for me the same GamingDate of th Consegna by Mainstock
 -- the lifecycle that accepted the consegna also created the ripristino
 ON lf.StockID = rip.DestStockID AND con.DestLifeCycleID = rip.SourceLifeCycleID --LF.GamingDate = RIP.SourceGamingDate
+AND rip.OpTypeID = 5 --ripritino type operation
 
 LEFT OUTER JOIN Accounting.tbl_TransactionValues ripV ON ripV.TransactionID = rip.TransactionID 
 	AND ripV.DenoID = sc.DenoID

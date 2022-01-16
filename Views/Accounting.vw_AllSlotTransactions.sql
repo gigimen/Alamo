@@ -9,6 +9,8 @@ GO
 
 
 
+
+
 CREATE VIEW [Accounting].[vw_AllSlotTransactions]
 WITH SCHEMABINDING
 AS
@@ -26,6 +28,8 @@ SELECT
 		,CONVERT(FLOAT, tr.AmountCents) / 100.0						AS Importo
 		,CONVERT(FLOAT, tr.AmountCents) / 100.0	* tr.ExchangeRate	AS CHF
 		,tr.SlotNr
+	  ,(CONVERT([int],tr.[SlotNr]/power((2),(8))&0xFF)) AS Bank
+	  ,(CONVERT([int],tr.[SlotNr]&0xFF)) AS Position
 		,tr.IpAddr
 		,GeneralPurpose.fn_UTCToLocal(1,tr.InsertTimeStampUTC)	AS IssueTimeLoc
 		,GeneralPurpose.fn_UTCToLocal(1,tr.PaymentTimeUTC)	AS PaymentTimeLoc

@@ -14,21 +14,21 @@ RETURNS  @StockStatus TABLE (
 	StockTypeID				INT,
 	StockID					INT,
 	MinBet					INT,
-	GamingDate				datetime,
-	LastGamingDate			datetime,
-	LastLFID				int,
-	maxLifeCycleSnapshotID	int,
+	GamingDate				DATETIME,
+	LastGamingDate			DATETIME,
+	LastLFID				INT,
+	maxLifeCycleSnapshotID	INT,
 	StockCompositionID		INT,
 	ChiusuraSnapshotID		INT,
 	CONTransactionID		INT,
 	RipSourceLifeCycleID	INT,
-	RipGamingDate			datetime,
+	RipGamingDate			DATETIME,
 	RIPTransactionID		INT,
-	OraChiusura				datetime,
-	MyRipTransID			int,
-	MyRipSourceGamingDate	datetime,
-	MYRipSourceLifeCycleID	int,
-	OraApertura				datetime,
+	OraChiusura				DATETIME,
+	MyRipTransID			INT,
+	MyRipSourceGamingDate	DATETIME,
+	MYRipSourceLifeCycleID	INT,
+	OraApertura				DATETIME,
 	PrevGamingDate			DATETIME,
 	PrevLifeCycleID			INT,
 	PrevConTransactionID	INT
@@ -118,7 +118,7 @@ AND rip2.OpTypeID = 5 --only ripristino
 AND rip2.DestStockID = s.StockID
 */
 
---look for my ripristino
+--look for my ripristino the one I have accepted
 LEFT OUTER JOIN Accounting.vw_AllTransactions RIP ON RIP.DestLifeCycleID = LF.LifeCycleID and RIP.OpTypeID = 5 --only ripristino operations
 --look for consegna that generate the ripristino
 LEFT outer  join [Accounting].[fn_GetLastLifeCycleByStockType](@gaming - 1,@stockTypeID) prev on prev.StockId = s.StockID 

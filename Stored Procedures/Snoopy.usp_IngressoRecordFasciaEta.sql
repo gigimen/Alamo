@@ -21,7 +21,7 @@ BEGIN TRANSACTION trn_IngressoRecordFasciaEta
 BEGIN TRY  
 
 
-	INSERT INTO Snoopy.tbl_FasceEtaRegistrations
+	INSERT INTO Reception.tbl_FasceEtaRegistrations
 			   ([FK_ControlID]
 			   ,[FasciaEtaID]
 			   ,Sesso
@@ -35,7 +35,7 @@ BEGIN TRY
 	DECLARE @sitename VARCHAR(32),@SiteId INT
 
 	SELECT @SiteID = s.SiteID,@sitename = s.FName
-	FROM Snoopy.tbl_VetoControls c
+	FROM Reception.tbl_VetoControls c
 	INNER JOIN CasinoLayout.Sites s ON s.SiteID = c.SiteId
 	WHERE PK_ControllID = @fk_controlid AND s.SiteTypeID = 2 --only for sesam entrance
 

@@ -9,7 +9,7 @@ CREATE     FUNCTION [Accounting].[fn_ChipsReportDailyIncrement]
 @valuetypeid INT
 )
 /*
-select * from [Accounting].[fn_ChipsReport] ('8.30.2020',1)
+select * from [Accounting].[fn_ChipsReportDailyIncrement] ('12.29.2021',59)
 order by stocktypeid,stockid
 
 */
@@ -24,6 +24,7 @@ RETURNS  @ret TABLE
 	Chips1000	INT,
 	Chips100	INT,
 	Chips50		INT,
+	Chips25		INT,
 	Chips20		INT,
 	Chips10		INT,
 	Chips5		INT,
@@ -56,6 +57,7 @@ DECLARE @yea TABLE
 	Chips1000	INT,
 	Chips100	INT,
 	Chips50		INT,
+	Chips25		INT,
 	Chips20		INT,
 	Chips10		INT,
 	Chips5		INT,
@@ -74,6 +76,7 @@ DECLARE @today TABLE
 	Chips1000	INT,
 	Chips100	INT,
 	Chips50		INT,
+	Chips25		INT,
 	Chips20		INT,
 	Chips10		INT,
 	Chips5		INT,
@@ -93,7 +96,8 @@ INSERT INTO @today
     Chips1000,
     Chips100,
     Chips50,
-    Chips20,
+    Chips25,
+	Chips20,
     Chips10,
     Chips5,
     Chips1,
@@ -110,7 +114,8 @@ SELECT
     Chips1000,
     Chips100,
     Chips50,
-    Chips20,
+    Chips25,
+	Chips20,
     Chips10,
     Chips5,
     Chips1,
@@ -130,7 +135,8 @@ INSERT INTO @yea
     Chips1000,
     Chips100,
     Chips50,
-    Chips20,
+    Chips25,
+	Chips20,
     Chips10,
     Chips5,
     Chips1,
@@ -147,7 +153,8 @@ SELECT
     Chips1000,
     Chips100,
     Chips50,
-    Chips20,
+    Chips25,
+	Chips20,
     Chips10,
     Chips5,
     Chips1,
@@ -167,7 +174,8 @@ INSERT INTO @ret
     Chips1000,
     Chips100,
     Chips50,
-    Chips20,
+    Chips25,
+	Chips20,
     Chips10,
     Chips5,
     Chips1,
@@ -184,6 +192,7 @@ SELECT
     t.Chips1000		- y.Chips1000,
     t.Chips100		- y.Chips100,
     t.Chips50		- y.Chips50,
+    t.Chips25		- y.Chips25,
     t.Chips20		- y.Chips20,
     t.Chips10		- y.Chips10,
     t.Chips5		- y.Chips5,

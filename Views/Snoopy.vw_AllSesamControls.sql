@@ -16,7 +16,7 @@ SELECT  s.FName AS SiteName,
 		GamingDate, 
 		searchString, 
 		HitsNumber
-FROM Snoopy.tbl_VetoControls AS e
+FROM Reception.tbl_VetoControls AS e
 INNER JOIN CasinoLayout.Sites s ON e.SiteId = s.SiteID
 
 

@@ -100,10 +100,10 @@ INSERT INTO @CassaResults
 
 DECLARE @gaming DATETIME
 DECLARE @stocktypeid INT
-SET @stocktypeid = 7
+SET @stocktypeid = 4
 
-SET @gaming = '12.15.2021'
---select * FROM [Accounting].[fn_GetStockLifeCycleInfo] (@gaming, @stocktypeid) AS s order by Stockid
+SET @gaming = '12.29.2021'
+--select * FROM [Accounting].[fn_GetStockLifeCycleInfo] (@gaming, @stocktypeid) where stockid = 37
 --*/
 SELECT
 	s.Tag,
@@ -126,13 +126,13 @@ SELECT
 	ISNULL((myrip.Quantity),0)							AS Ripristino,
 	ISNULL((prevch.Quantity),0) 
 	--		- ISNULL((prevcon.Quantity),0) 
-			+ ISNULL((myrip.Quantity),0) 				AS Apertura,
-	ISNULL((ch2.Quantity),0) + ISNULL((con.Quantity),0)	AS Conteggio,	
+			+ ISNULL((myrip.Quantity),0) 					AS Apertura,
+	ISNULL((ch.Quantity),0) + ISNULL((con.Quantity),0)	AS Conteggio,	
 	ISNULL((con.Quantity),0)							AS Consegna,
-	ISNULL((ch2.Quantity),0)							AS NelTrolley,	
+	ISNULL((ch.Quantity),0)								AS NelTrolley,	
 	ISNULL((rip.Quantity),0)							AS NextRipristino,
-	ISNULL((ch2.Quantity),0) 
-		- ISNULL((con.Quantity),0) 
+	ISNULL((ch.Quantity),0) 
+	--	- ISNULL((con.Quantity),0) 
 		+ ISNULL((rip.Quantity),0) 						AS NextApertura,
 	ISNULL(verpok.Quantity,0)							AS VersPoker
 FROM Accounting.fn_GetStockLifeCycleInfo (@gaming, @stocktypeid) AS s
@@ -169,6 +169,18 @@ LEFT OUTER	JOIN
 			TransactionID,
 	ValueTypeID
 )prevcon ON prevcon.TransactionID = s.PrevConTransactionID AND prevcon.CurrencyID = sc.CurrencyID AND prevcon.ValueTypeID = sc.ValueTypeID
+LEFT OUTER	JOIN 
+(
+	SELECT CAST(SUM(Denomination * Quantity) AS INT) AS Quantity,
+	TransactionID,
+	CurrencyID,
+			ValueTypeID
+	FROM [Accounting].[vw_AllTransactionDenominations] 
+	GROUP BY CurrencyID,
+			TransactionID,
+			ValueTypeID
+
+)  rip ON rip.TransactionID = s.RIPTransactionID AND rip.CurrencyID = sc.CurrencyID AND rip.ValueTypeID = sc.ValueTypeID
 
 LEFT OUTER	JOIN 
 (
@@ -205,19 +217,7 @@ LEFT OUTER	JOIN
 	GROUP BY CurrencyID,
 			LifeCycleSnapshotID,
 			ValueTypeID
-) ch2 ON ch2.LifeCycleSnapshotID = s.ChiusuraSnapshotID AND ch2.CurrencyID = sc.CurrencyID  AND ch2.ValueTypeID = sc.ValueTypeID
-LEFT OUTER	JOIN 
-(
-	SELECT CAST(SUM(Denomination * Quantity) AS INT) AS Quantity,
-	TransactionID,
-	CurrencyID,
-			ValueTypeID
-	FROM [Accounting].[vw_AllTransactionDenominations] 
-	GROUP BY CurrencyID,
-			TransactionID,
-			ValueTypeID
-
-)  rip ON rip.TransactionID = s.RIPTransactionID AND rip.CurrencyID = sc.CurrencyID AND rip.ValueTypeID = sc.ValueTypeID
+) ch ON ch.LifeCycleSnapshotID = s.ChiusuraSnapshotID AND ch.CurrencyID = sc.CurrencyID  AND ch.ValueTypeID = sc.ValueTypeID
 LEFT OUTER	JOIN 
 (
 	SELECT CAST(SUM(Denomination * Quantity) AS INT) AS Quantity,

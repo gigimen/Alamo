@@ -70,6 +70,8 @@ WHEN ValueTypeID = 52	AND denoid = 184						THEN 'COMMISSIONI_EUR_CC_ADUNO'
 WHEN ValueTypeID = 52	AND denoid = 185						THEN 'COMMISSIONI_EUR_ASSEGNI'
 WHEN ValueTypeID = 44	AND denoid = 173						THEN 'CASSE_ASSEGNI'
 WHEN ValueTypeID = 58	AND denoid = 208						THEN 'CASSE_EUR_MARKETING'
+WHEN ValueTypeID = 60	AND denoid = 214						THEN 'TORNEO_POKER_CASH_IN'
+WHEN ValueTypeID = 60	AND denoid = 215						THEN 'TORNEO_POKER_CASH_OUT'
 ELSE NULL
 END
 FROM CasinoLayout.tbl_Denominations WHERE DenoID = @DenoID

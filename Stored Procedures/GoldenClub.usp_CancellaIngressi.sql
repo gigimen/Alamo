@@ -74,7 +74,7 @@ BEGIN TRY
 
 
 
-	delete from Snoopy.tbl_CustomerIngressi
+	delete from Reception.tbl_CustomerIngressi
 	where CustomerID = @CustID and GamingDate=@Gaming
 	AND IsUscita = 0
 

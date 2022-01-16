@@ -174,11 +174,11 @@ BEGIN TRY
 	DECLARE @visits INT
 
 	SELECT @visits = ISNULL(COUNT(entratatimestampUTC),0)
-	FROM Snoopy.tbl_CustomerIngressi 
+	FROM Reception.tbl_CustomerIngressi 
 	WHERE GamingDate  = @gaming AND CustomerID = @CustID
 
 
-	INSERT INTO Snoopy.tbl_CustomerIngressi
+	INSERT INTO Reception.tbl_CustomerIngressi
 			   ([entratatimestampUTC]
 			   ,[CustomerID]
 			   ,[SiteID]

@@ -8,17 +8,22 @@ CREATE   PROCEDURE [Accounting].[usp_ChipsReportEx]
 @absolute		INT
 AS
 
-IF NOT @valuetypeid IN (1,36,42,100)
+IF NOT @valuetypeid IN (1,36,42,59,100)
 BEGIN
 	raiserror('Must specify ValuetypeID 1,36 or 42',16,-1)
 	return (1)	
 END
 /*
 DECLARE @gaming DATETIME,@valuetypeid INT
-SET @gaming = '8.30.2020'
-SET @valuetypeid = 1
---*/
+SET @gaming = '12.31.2021'
+SET @valuetypeid = 59
 
+execute [Accounting].[usp_ChipsReportEx]
+@gaming			,
+@valuetypeid	,
+1
+--*/
+DECLARE @sql NVARCHAR(MAX)
 IF @valuetypeid = 100
 BEGIN
 	--sum up chips chf and chips gioco euro
@@ -226,41 +231,36 @@ BEGIN
 END
 ELSE
 BEGIN
-	IF @absolute = 0
-		select 
-			c.Tag,
-			c.GamingDate,
-			c.Chips10000,
-			c.Chips5000,
-			c.Chips1000,
-			c.Chips100,
-			c.Chips50,
-			c.Chips20,
-			c.Chips10,
-			c.Chips5,
-			c.Chips1,
-			c.LuckyChips,
-			c.TotalValue 
-		FROM [Accounting].[fn_ChipsReportDailyIncrement] (@gaming,@valuetypeid)	c
-		ORDER BY c.StockTypeID,	c.StockID
-	ELSE
-		select 
-			c.Tag,
-			c.GamingDate,
-			c.Chips10000,
-			c.Chips5000,
-			c.Chips1000,
-			c.Chips100,
-			c.Chips50,
-			c.Chips20,
-			c.Chips10,
-			c.Chips5,
-			c.Chips1,
-			c.LuckyChips,
-			c.TotalValue 
-		FROM [Accounting].[fn_ChipsReportAbsolute] (@gaming,@valuetypeid)	c
-		ORDER BY c.StockTypeID,	c.StockID
-        
+	/*
+DECLARE @gaming DATETIME,@valuetypeid INT,@sql nvarchar(max)
+SET @gaming = '12.31.2021'
+SET @valuetypeid = 1
+--*/
+	SET @sql =
+		'SELECT          	 ' +
+		'	c.Tag,			 ' +
+		'	c.GamingDate,	 ' +
+		CASE WHEN @valuetypeid NOT IN(59) THEN '	c.Chips10000,'  ELSE '' END +
+		CASE WHEN @valuetypeid NOT IN(59) THEN '	c.Chips5000,'  ELSE '' END +
+		'	c.Chips1000,	 ' +
+		'	c.Chips100,		 ' +
+		CASE WHEN @valuetypeid NOT IN(59) THEN '	c.Chips50,'  ELSE '' END +
+		CASE WHEN @valuetypeid IN(1,59) THEN ' c.Chips25,' ELSE '' END +
+		CASE WHEN @valuetypeid NOT IN(59) THEN '	c.Chips20,'  ELSE '' END +
+		CASE WHEN @valuetypeid NOT IN(59) THEN '	c.Chips10,'  ELSE '' END +
+		'	c.Chips5,		 ' +
+		'	c.Chips1,		 ' +
+		CASE WHEN @valuetypeid IN(1) THEN '	c.LuckyChips,'  ELSE '' END +
+		'	c.TotalValue 	 ' +
+		CASE 
+			WHEN @absolute = 0 
+			THEN 'FROM [Accounting].[fn_ChipsReportDailyIncrement] (''' 
+			ELSE 'FROM [Accounting].[fn_ChipsReportAbsolute] (''' 
+		END +
+		CONVERT(NVARCHAR(28),@gaming,23) + ''', ' 
+		+ CAST(@valuetypeid AS VARCHAR(32)) + ') c' +
+		' ORDER BY c.StockTypeID,	c.StockID'
+	EXEC sp_executeSQL @SQL			
 END
 
 RETURN 0

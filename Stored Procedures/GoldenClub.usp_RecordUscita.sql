@@ -48,7 +48,7 @@ END
 ELSE
 BEGIN
 
-	SELECT @TotUscite = isnull(sum(Increment),0),@ultimaora = max(TimestampUTC) FROM [Snoopy].[tbl_Uscite]
+	SELECT @TotUscite = isnull(sum(Increment),0),@ultimaora = max(TimestampUTC) FROM Reception.tbl_Uscite
 	WHERE GamingDate = @gaming
 
 	--trascura conteggi troppo vicini 
@@ -59,7 +59,7 @@ BEGIN
 
 		BEGIN TRY  
 
-			INSERT INTO [Snoopy].[tbl_Uscite]
+			INSERT INTO Reception.tbl_Uscite
 					   ([SiteID]
 					   ,[TimestampUTC]
 					   ,[Increment]
@@ -102,6 +102,4 @@ BEGIN
 END
 
 RETURN @ret
-GO
-GRANT EXECUTE ON  [GoldenClub].[usp_RecordUscita] TO [rasSesam3]
 GO

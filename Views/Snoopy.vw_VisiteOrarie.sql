@@ -26,8 +26,8 @@ FROM
 		datepart(hour,i.entratatimestampLoc) as ora,
 		count(*) as Controlli,
 		i.GamingDate
-	FROM Snoopy.tbl_FasceEtaRegistrations i
-	INNER JOIN [Snoopy].[tbl_VetoControls] c ON c.PK_ControllID = i.[FK_ControlID]
+	FROM Reception.tbl_FasceEtaRegistrations i
+	INNER JOIN Reception.tbl_VetoControls c ON c.PK_ControllID = i.[FK_ControlID]
 	INNER JOIN CasinoLayout.Sites s ON s.SiteID = c.SiteID 
 	INNER JOIN CasinoLayout.SiteTypes st ON st.SiteTypeID = s.SiteTypeID
 	WHERE st.SiteTypeID = 2  --count only sesam entrances
@@ -50,7 +50,7 @@ FULL OUTER JOIN
 				datepart(day,e.entratatimestampLoc)		as giorno,
 				datepart(hour,e.entratatimestampLoc)	as ora,
 				e.Gamingdate
-		FROM Snoopy.tbl_CustomerIngressi e
+		FROM Reception.tbl_CustomerIngressi e
 		INNER JOIN CasinoLayout.Sites s ON s.SiteID = e.SiteID
 		WHERE s.SiteTypeID = 2  --count all research done only at sesam
 		group by CustomerID,gamingdate,datepart(day,e.entratatimestampLoc),
@@ -65,7 +65,7 @@ full outer join
 				datepart(day,[TimestampLoc])			as giorno,
 				datepart(hour,[TimestampLoc])			as ora,
 				Gamingdate
-		FROM Snoopy.tbl_Uscite 
+		FROM Reception.tbl_Uscite 
 		group by gamingdate,
 				datepart(day,[TimestampLoc]),
 				datepart(hour,[TimestampLoc])

@@ -5,7 +5,7 @@ GO
 
 
 
-CREATE VIEW [GoldenClub].[vw_AllGoldenGiorniPreferiti]
+CREATE VIEW [Reception].[vw_AllGoldenGiorniPreferiti]
 WITH SCHEMABINDING
 AS
 SELECT a.customerid,max(a.giorniPref) as giorniPref,max(a.maxentrate) as maxentrate,min(b.wday) as wday
@@ -18,7 +18,7 @@ FROM
 			  COUNT(distinct GamingDate) AS totentrate
 			  ,DATEPART(weekday,[GamingDate]) AS wday
 			  ,DATENAME(weekday,gamingdate) AS dname
-		  FROM Snoopy.tbl_CustomerIngressi e
+		  FROM Reception.tbl_CustomerIngressi e
 		  INNER JOIN CasinoLayout.Sites s ON e.SiteID = s.SiteID
 		  WHERE gamingdate >= GETDATE() - 180
 		  AND IsUscita = 0
@@ -36,7 +36,7 @@ INNER JOIN
 		  COUNT(distinct GamingDate) AS totentrate
 		  ,DATEPART(weekday,[GamingDate]) AS wday
 		  ,DATENAME(weekday,gamingdate) AS dname
-	  FROM Snoopy.tbl_CustomerIngressi e
+	  FROM Reception.tbl_CustomerIngressi e
 		  INNER JOIN CasinoLayout.Sites s ON e.SiteID = s.SiteID
 		  WHERE gamingdate >= GETDATE() - 180
 		  AND IsUscita = 0

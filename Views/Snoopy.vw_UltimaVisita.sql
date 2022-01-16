@@ -9,6 +9,6 @@ SELECT [CustomerID]
       ,MAX([GamingDate])				AS UltimoGamingDate
 	  ,MAX(entratatimestampLoc)			AS UtimaOra
       ,COUNT(DISTINCT gamingdate)		AS TotVisite
-  FROM [Alamo].[Snoopy].[tbl_CustomerIngressi]
+  FROM Reception.tbl_CustomerIngressi
   GROUP BY CustomerID
 GO

@@ -87,12 +87,21 @@ FROM
 	UNION ALL
 	(
 /*  vecchio modo 
+
+declare @gaming datetime
+	set @gaming = '12.29.2021'
 	SELECT 'CASSE_' + [CurrencyAcronim] + '_GETTONI' AS ForIncassoTag,
 			  SUM([Chiusura]) - SUM(Apertura) AS Amount
 		FROM [ForIncasso].[vw_DailyGettoniCasse]
 		WHERE GamingDate = @gaming
 		GROUP BY [CurrencyAcronim]
-		*/
+
+		SELECT *,[Chiusura] - (Apertura) FROM [ForIncasso].[vw_DailyGettoniCasse]
+		WHERE GamingDate = @gaming
+SELECT * FROM 		[ForIncasso].[fn_GetChiusureCashCasse]  (@gaming)
+		WHERE ValueTypeID IN (1,36,42,59)
+	--*/
+
 		SELECT 'CASSE_' + CASE WHEN ValueTypeID = 59 THEN 'POK' ELSE [Acronim] END + '_GETTONI' AS ForIncassoTag,
 			  SUM([Conteggio]) - SUM(Apertura) - SUM(verspoker) AS Amount 
 		FROM [ForIncasso].[fn_GetChiusureCashCasse]  (@gaming)

@@ -93,7 +93,7 @@ LEFT OUTER JOIN
 (
 SELECT i.CustomerID,COUNT(*) AS tot,
 MAX(i.entratatimestampLoc) AS lastVisit
-FROM Snoopy.tbl_CustomerIngressi i
+FROM Reception.tbl_CustomerIngressi i
 WHERE IsUscita = 0
 GROUP BY  i.CustomerID
 ) v ON v.CustomerID = g.CustomerID

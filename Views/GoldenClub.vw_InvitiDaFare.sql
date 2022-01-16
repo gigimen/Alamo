@@ -20,7 +20,7 @@ AS
 	  ,g.SMSNumber
   FROM GoldenClub.tbl_Members g
   LEFT OUTER JOIN GoldenClub.tbl_InvitiCene i ON g.CustomerID = i.CustomerID
-  LEFT OUTER JOIN GoldenClub.vw_AllGoldenGiorniPreferiti p ON p.customerid = g.CustomerID
+  LEFT OUTER JOIN Reception.vw_AllGoldenGiorniPreferiti p ON p.customerid = g.CustomerID
   WHERE g.SMSNumber IS NOT NULL 
   AND g.GoldenParams & 1 = 0 --con sms valido
   AND g.GoldenParams & 256 = 256 --inviti cene è valido

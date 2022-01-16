@@ -22,7 +22,7 @@ SELECT @gaming										AS GamingDate,
 FROM
 (
 	SELECT COUNT(*) AS controls
-	FROM Snoopy.tbl_VetoControls c
+	FROM Reception.tbl_VetoControls c
 	INNER JOIN CasinoLayout.Sites s ON s.SiteID = c.SiteID 
 	INNER JOIN CasinoLayout.SiteTypes st ON st.SiteTypeID = s.SiteTypeID
 	WHERE st.SiteTypeID = 2  --count only sesam entrances
@@ -33,7 +33,7 @@ CROSS JOIN
 (
 	--add to entrance all card swapped (ckey query not used)
 	SELECT COUNT(DISTINCT Customerid) AS visita
-	FROM Snoopy.tbl_CustomerIngressi e
+	FROM Reception.tbl_CustomerIngressi e
 	INNER JOIN CasinoLayout.Sites s ON s.SiteID = e.SiteID
 	WHERE CardID IS NOT NULL  AND  s.SiteTypeID = 2  --count all research done only at sesam
 	AND e.GamingDate = @gaming

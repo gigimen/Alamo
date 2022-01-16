@@ -5,7 +5,7 @@ GO
 
 
 
-CREATE FUNCTION [Snoopy].[fn_VisiteOrarieByCKEY_Range]
+CREATE FUNCTION [Reception].[fn_VisiteOrarieByCKEY_Range]
 (
 	@GamingDateFrom			DATETIME,
 	@GamingDateTo			DATETIME
@@ -68,8 +68,8 @@ FROM
 	   ,SUM(CASE When c.[SiteID]=50 Then 1 Else 0 End ) as CKey2
 	   ,SUM(CASE When c.[SiteID]=111 Then 1 Else 0 End ) as CKey3
 
-	FROM Snoopy.tbl_FasceEtaRegistrations i
-	INNER JOIN [Snoopy].[tbl_VetoControls] c ON c.PK_ControllID = i.[FK_ControlID]
+	FROM Reception.tbl_FasceEtaRegistrations i
+	INNER JOIN Reception.tbl_VetoControls c ON c.PK_ControllID = i.[FK_ControlID]
 	INNER JOIN CasinoLayout.Sites s ON s.SiteID = c.SiteID 
 	INNER JOIN CasinoLayout.SiteTypes st ON st.SiteTypeID = s.SiteTypeID
 	WHERE st.SiteTypeID = 2 and c.GamingDate >= @GamingDateFrom AND c.GamingDate <= @GamingDateTo --count only sesam entrances
@@ -85,7 +85,7 @@ FULL OUTER JOIN
 	   ,SUM(CASE When e.[SiteID]=50 Then 1 Else 0 End ) as CKey2
 	   ,SUM(CASE When e.[SiteID]=111 Then 1 Else 0 End ) as CKey3
 				,e.GamingDate
-		FROM Snoopy.tbl_CustomerIngressi e
+		FROM Reception.tbl_CustomerIngressi e
 		INNER JOIN CasinoLayout.Sites s ON s.SiteID = e.SiteID
 		WHERE s.SiteTypeID = 2  and GamingDate >= @GamingDateFrom AND GamingDate <= @GamingDateTo --count all research done only at sesam
 		group by GamingDate,datepart(day,e.entratatimestampLoc),
