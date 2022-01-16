@@ -78,6 +78,11 @@ INSERT INTO @ChipsStatus
 	CambioConFromMe	,
 	Stato				
 )
+/*
+
+declare @lifecycleid int
+set @lifecycleid = 196518
+--*/
 SELECT
 	s.StockID,
 	s.StockTypeID,
@@ -232,11 +237,11 @@ AND cambioConFromMe.denoid				= sc.DenoID
 
 
 WHERE sc.IsRiserva = 0 
-AND d.ValueTypeID IN(1,36,42,59) --solo i gettoni sfr, gettoni gioco ed euro e poker
+AND s.LifeCycleID = @lifecycleID
+AND d.ValueTypeID IN(1,36,42,59) --solo i gettoni sfr, gettoni gioco ed euro
 AND	s.StockTypeID IN (1,2,3,4,5,6,7) --tavoli,smt,trolleys,cc,ms,riserva,e incasso
 AND d.Denomination NOT IN (0,500)--forget about lucy chip and 500 chf 
 and d.DenoID not in (95,96,97)  --forget about medaglie
-AND s.LifeCycleID = @lifecycleID
 
 RETURN
 END

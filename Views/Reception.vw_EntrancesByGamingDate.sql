@@ -16,7 +16,7 @@ A partire dal 20.1.2017 separiamo le visite dalle entrate
 visite:		piu' visite dello stesso cliente valgono una entrata sola per la giornata
 entrate:	piu' visite dello stesso cliente valgono ognuna 1 entrata nel computo della giornata
 */
-CREATE VIEW [GoldenClub].[vw_CKEntrancesByGamingDate]
+CREATE VIEW [Reception].[vw_EntrancesByGamingDate]
 AS
 /*
 
@@ -44,7 +44,7 @@ FROM
 (
 
 	SELECT GamingDate,COUNT(*) AS OldIngressi
-	FROM Snoopy.tbl_VetoControls c
+	FROM Reception.tbl_VetoControls c
 	INNER JOIN CasinoLayout.Sites s ON s.SiteID = c.SiteID 
 	INNER JOIN CasinoLayout.SiteTypes st ON st.SiteTypeID = s.SiteTypeID
 	WHERE st.SiteTypeID = 2  --count only sesam entrances
@@ -56,7 +56,7 @@ LEFT OUTER JOIN
 	SELECT e.GamingDate,
 			COUNT(*) AS OldIngressiAlamo,
 			COUNT(DISTINCT CustomerID) AS OldVisiteAlamo
-	FROM Snoopy.tbl_CustomerIngressi e
+	FROM Reception.tbl_CustomerIngressi e
 	INNER JOIN CasinoLayout.Sites s ON s.SiteID = e.SiteID
 	WHERE CardID IS NOT NULL  
 	AND  s.SiteTypeID = 2  --count all research done only at sesam	
@@ -68,7 +68,7 @@ LEFT OUTER JOIN
 			COUNT(*) AS IngressiAlamo,
 			COUNT(DISTINCT CustomerID) AS VisiteAlamo,
 			SUM( CASE WHEN e.[FK_CardEntryModeID] = 4 THEN 1 ELSE 0 END) AS PickedFromList
-	FROM Snoopy.tbl_CustomerIngressi e
+	FROM Reception.tbl_CustomerIngressi e
 	INNER JOIN CasinoLayout.Sites s ON s.SiteID = e.SiteID
 	WHERE s.SiteTypeID = 2  --count all research done only at sesam
 	GROUP BY e.GamingDate
@@ -98,8 +98,8 @@ LEFT OUTER JOIN
 */
 	SELECT	i.GamingDate,
 			COUNT(*) AS SesamControls
-	FROM Snoopy.tbl_FasceEtaRegistrations i
-	INNER JOIN [Snoopy].[tbl_VetoControls] c ON c.PK_ControllID = i.[FK_ControlID]
+	FROM Reception.tbl_FasceEtaRegistrations i
+	INNER JOIN Reception.tbl_VetoControls c ON c.PK_ControllID = i.[FK_ControlID]
 	INNER JOIN CasinoLayout.Sites s ON s.SiteID = c.SiteID 
 	INNER JOIN CasinoLayout.SiteTypes st ON st.SiteTypeID = s.SiteTypeID
 	WHERE st.SiteTypeID = 2  --count only sesam entrances

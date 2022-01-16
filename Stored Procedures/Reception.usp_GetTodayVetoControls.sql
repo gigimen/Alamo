@@ -5,7 +5,7 @@ GO
 
 
 
-CREATE procedure [Snoopy].[usp_GetTodayVetoControls]
+CREATE procedure [Reception].[usp_GetTodayVetoControls]
 @siteID int
 AS
  
@@ -16,7 +16,7 @@ select
 [TimeStampLoc] as ora,
 [searchString],
 [HitsNumber]
-from Snoopy.tbl_VetoControls
+from Reception.tbl_VetoControls
 where [SiteId] = @siteID and [gamingDate] = @gaming
 order by [TimeStampUTC] desc
 

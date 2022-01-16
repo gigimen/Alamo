@@ -152,7 +152,7 @@ set	@body = N'<HTML><BODY bgColor=''cyan''>
 <br>											
 <br>Slot Nr: ' + @slotNr + '
 <br>											
-<br>Data e Ora: ' + convert(nvarchar(16),@timestampLoc,0) + '
+<br>Data e Ora: ' + convert(nvarchar(32),@timestampLoc,0) + '
 <br>											
 <br>Tecnico: ' + @lastUser + '
 <br>											

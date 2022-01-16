@@ -43,7 +43,7 @@ BEGIN
 
 
 	-- check if customer entered CK
-	select @NumEntrance = COUNT(*) from Snoopy.tbl_CustomerIngressi
+	select @NumEntrance = COUNT(*) from Reception.tbl_CustomerIngressi
 	where CustomerID = @CustID
 	and GamingDate = @gaming
 	AND IsUscita = 0

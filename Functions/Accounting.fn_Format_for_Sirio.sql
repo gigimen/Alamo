@@ -7,8 +7,8 @@ GO
 
 
 CREATE FUNCTION [Accounting].[fn_Format_for_Sirio] (
-@ContoBase	INT,
-@contropartita INT,
+@ContoBase	VARCHAR(32),
+@contropartita VARCHAR(32),
 @Importo	float,
 @currency	INT,
 @Gamingdate datetime
@@ -20,10 +20,29 @@ BEGIN
 /*
 
 
-print   [Accounting].[fn_Format_for_Sirio] (33201,10020,100.45,0,'1.2.2019')
+print   [Accounting].[fn_Format_for_Sirio] ('33002.1','10020',100.45,0,'12.2.2021')
 
+declare
+@ContoBase	VARCHAR(32),
+@contropartita VARCHAR(32),
+@Importo	float,
+@currency	INT,
+@Gamingdate datetime
 
-*/
+set @ContoBase = '33002.1'
+set @contropartita = '10020'
+set @Importo = 100.45
+set @currency = 0
+set @Gamingdate = '12.1.2021'
+
+print [Accounting].[fn_Format_for_Sirio] (
+@ContoBase	,
+@contropartita ,
+@Importo	,
+@currency	,
+@Gamingdate 
+)  
+--*/
 	DECLARE 
 	@descr		NVARCHAR(50),
 	@cco		NVARCHAR(50),
@@ -40,14 +59,14 @@ SELECT
       ,@cco = [Cco]
       ,@data =[data]
   FROM [Accounting].[tbl_SirioConti]
-	WHERE [conto] = @contropartita
+	WHERE [conto] = @ContoBase
 	AND 
 		(
 		( [indice] = 1 AND @Importo > 0)
 		OR
 		( [indice] = 2 AND @Importo < 0)
 		)
-
+		--SELECT @descr
 	--registrazione con o senza CCO
 /*
 Parte record testata: (in comune a tutti i record)						
@@ -89,7 +108,10 @@ Parte record tipo 0048: (registrazione contabile)
 */	
 
 
-	SET @i = @i + CAST(@ContoBase AS VARCHAR(16)) + '       '
+	SET @i = @i + CAST(@ContoBase AS VARCHAR(16)) 
+	--fill with spaces up to 20 chars
+	SET @i = @i + SPACE(20 - LEN(@i))
+
 	If @Importo > 0 
         SET @i = @i + '1' --siamo in dare
 	ELSE
@@ -98,12 +120,13 @@ Parte record tipo 0048: (registrazione contabile)
 
 	--data
 	SET @i = @i + convert(VARCHAR(32), @Gamingdate, 104)
-     
+    
 	 --giustificativo      
 	SET @i = @i + CASE WHEN @currency = 0 THEN 'INCASSO EUR' ELSE 'INCASSO' END
-
+ 	
 	--fill with spaces up to 47 chars
 	SET @i = @i + SPACE(46 - LEN(@i))
+
 
 	 --giustificativo      
 	SET @i = @i + @descr

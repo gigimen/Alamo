@@ -8,6 +8,8 @@ GO
 
 
 
+
+
 CREATE VIEW [Accounting].[vw_AllChiusuraConsegnaDenominations]
 WITH SCHEMABINDING
 AS
@@ -79,17 +81,25 @@ LEFT OUTER JOIN Accounting.tbl_SnapshotValues chV ON  chV.LifeCycleSnapshotID = 
 
 --THEN Consegna VALUES
 --use left join to include also Consegna with Denomination with zero values
-left outer join Accounting.tbl_Transactions con on con.SourceLifeCycleID = lf.LifeCycleID  
+LEFT OUTER JOIN Accounting.tbl_Transactions con ON con.SourceLifeCycleID = lf.LifeCycleID  
 	AND con.OpTypeID = 6 --Consegna
-	and con.TrCancelID is null
+	AND con.TrCancelID IS NULL
 LEFT OUTER JOIN Accounting.vw_AllTransactionDenominations conV ON conV.TransactionID = con.TransactionID
 	AND conV.DenoID = sc.DenoID
 	
 --FINALLY RIPRISTINO
 --use left join to include also ripristino with Denomination with zero values
-LEFT OUTER JOIN Accounting.vw_AllTransactions rip ON rip.DestStockID = lf.StockID 
+LEFT OUTER JOIN Accounting.tbl_Transactions rip 
+/*old way based on gamingdate
+ON rip.DestStockID = lf.StockID 
 	AND rip.SourceGamingDate = lf.GamingDate
 	AND rip.OpTypeID = 5 --ripristino
+	*/
+--the ripristion has been created for me the same GamingDate of th Consegna by Mainstock
+-- the lifecycle that accepted the consegna also created the ripristino
+ON lf.StockID = rip.DestStockID AND con.DestLifeCycleID = rip.SourceLifeCycleID --LF.GamingDate = RIP.SourceGamingDate
+AND rip.OpTypeID = 5 --ripritino type operation
+
 LEFT OUTER JOIN Accounting.tbl_TransactionValues ripV ON ripV.TransactionID = rip.TransactionID 
 	AND ripV.DenoID = sc.DenoID
 WHERE sc.IsRiserva = 0

@@ -20,9 +20,9 @@ DECLARE @NumEntrance int
 		WHERE GamingDate = @gaming
 PRINT @NumEntrance
 */
-		SELECT @NumEntrate = EntrateTotali FROM GoldenClub.vw_CKEntrancesByGamingDate
+		SELECT @NumEntrate = EntrateTotali FROM Reception.vw_EntrancesByGamingDate
 		WHERE GamingDate = @gaming
 
-		SELECT @NumUscite = sum(Increment) FROM [Snoopy].[tbl_Uscite]
+		SELECT @NumUscite = sum(Increment) FROM Reception.tbl_Uscite
 		WHERE GamingDate = @gaming
 GO

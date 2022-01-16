@@ -16,7 +16,7 @@ FROM
 			GamingDate
 			,[CustomerID]
 			,COUNT(DISTINCT CustomerID) AS Visite
-		FROM Snoopy.tbl_CustomerIngressi
+		FROM Reception.tbl_CustomerIngressi
 		GROUP BY CustomerID,GamingDate
 ) v
 INNER JOIN

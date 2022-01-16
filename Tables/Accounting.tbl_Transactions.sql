@@ -81,8 +81,6 @@ INSERT INTO Accounting.tbl_Transactions
        FROM inserted
 
 GO
-DISABLE TRIGGER [Accounting].[CheckForStockClose] ON [Accounting].[tbl_Transactions]
-GO
 ALTER TABLE [Accounting].[tbl_Transactions] ADD CONSTRAINT [PK_Transactions] PRIMARY KEY CLUSTERED  ([TransactionID]) ON [PRIMARY]
 GO
 CREATE NONCLUSTERED INDEX [IX_Transactions_DestLifeCycleID] ON [Accounting].[tbl_Transactions] ([DestLifeCycleID]) ON [PRIMARY]

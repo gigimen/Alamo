@@ -21,7 +21,7 @@ if @firstname is not null and len(@firstname) > 0
 		s.FName as SiteName,
 		sec.SectorName as Sector,
 		e.FK_CardEntryModeID AS EntryMode		
-	FROM    Snoopy.tbl_CustomerIngressi e 
+	FROM    Reception.tbl_CustomerIngressi e 
 	INNER JOIN  Snoopy.tbl_Customers c ON c.CustomerID = e.CustomerID
 	INNER JOIN  CasinoLayout.Sites s ON s.SiteID = e.SiteID
 	LEFT OUTER JOIN GoldenClub.tbl_Members g ON g.CustomerID = e.CustomerID
@@ -42,7 +42,7 @@ else
 		s.FName as SiteName,
 		sec.SectorName as Sector,
 		e.FK_CardEntryModeID AS EntryMode
-	FROM    Snoopy.tbl_CustomerIngressi e 
+	FROM    Reception.tbl_CustomerIngressi e 
 	INNER JOIN  Snoopy.tbl_Customers c ON c.CustomerID = e.CustomerID
 	INNER JOIN  CasinoLayout.Sites s ON s.SiteID = e.SiteID
 	LEFT OUTER JOIN GoldenClub.tbl_Members g ON g.CustomerID = e.CustomerID

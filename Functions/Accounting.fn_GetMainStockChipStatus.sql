@@ -30,6 +30,7 @@ RETURNS @ChipsStatus TABLE (
 	PrelievoDaRiserva	INT,
 	VersamentoInRiserva	INT,
 	TotaleConteggio		INT,
+	VersCassaCentrale	INT,
 	Stato				INT
 	)
 AS
@@ -76,6 +77,7 @@ INSERT INTO @ChipsStatus
     PrelievoDaRiserva	,
     VersamentoInRiserva	,
 	TotaleConteggio		,
+	VersCassaCentrale,
     Stato
 )
 SELECT 
@@ -94,6 +96,7 @@ SELECT
 	( ISNULL(creditToMe.Total,0)		) AS PrelievoDaRiserva		,
 	( ISNULL(fillsFromMe.Total,0)		) AS VersamentoInRiserva		,
 	( ISNULL(cont.totConteggio,0)		) AS TotaleConteggio		,
+	( ISNULL(vers.Amount,0)				) AS VersCassaCentrale		,
 	ISNULL(ap.Quantity,0) -- Apertura,
 	
 	--gettoni dati da me ad altri
@@ -108,6 +111,8 @@ SELECT
 
 	--gettoni nel conteggio
 	+ ISNULL(cont.totConteggio,0)
+	--gettoni versati a cassa centrale
+	- ISNULL(vers.Amount,0)
 
 	AS Stato
 --let's start from the active stocks
@@ -203,26 +208,41 @@ LEFT OUTER JOIN
 /*
 
 declare @gamingdate datetime
-set @gamingdate = '6.6.2020'
+set @gamingdate = '12.19.2021'
 
 --*/		
 
 		SELECT [DenoID]
 			  ,SUM([Quantity])	AS [totConteggio]
 		FROM [Accounting].[vw_AllConteggiDenominations] a
-		WHERE [GamingDate] = @GamingDate and ValueTypeID IN (1,42,36) --AND a.StockID IN (47) 
-		AND a.SnapshotTypeID IN(
-				7	,--Conteggio Box tavoli
-				8	,--Conteggio Tronc Tavoli
-				9	,--Conteggio Tronc
-				10	)--Conteggio Gastro
+		WHERE [GamingDate] = @GamingDate and ValueTypeID IN (1,42,36,59) --AND a.StockID IN (47) 
+		AND a.[SorvDoubleCheck] = 0
 
 		  GROUP BY     
 				[DenoID]
 ) cont on cont.DenoID = sc.DenoID
-    
+--se esiste già il versamento in cassa central bisogna detrarle dal MS
+LEFT OUTER JOIN
+ (
+/*
+DECLARE @gaming DATETIME,	@LifeCycleID int
+
+SET		@gaming = '12.20.2021'
+
+set @LifeCycleID = 196628
+--*/	
+	SELECT 
+	DenoID,
+	SUM([Quantity]) AS Amount
+	from Accounting.vw_AllTransactionDenominations 
+	WHERE ValueTypeID = 59--pokerchips
+	AND SourceLifeCycleID = @LifeCycleID AND OpTypeID = 4 AND DestStockTypeID = 7
+	--AND DestLifeCycleID IS NOT NULL --onlz if accepted bz cassa centra;e
+	GROUP BY [DenoID]
+) vers ON vers.DenoID = sc.DenoID
+   
 WHERE s.LifeCycleID = @LifeCycleID
-AND d.ValueTypeID IN(1,36,42,59) --solo gettoni chf,gioco euro, euro e poker
+AND d.ValueTypeID IN(1,36,42,59)
 
 
 RETURN

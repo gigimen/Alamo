@@ -56,7 +56,7 @@ BEGIN TRANSACTION trn_VetoControl
 BEGIN TRY  
 
 
-	INSERT INTO [Snoopy].[tbl_VetoControls]
+	INSERT INTO Reception.tbl_VetoControls
 			   ([searchString]
 			   ,[HitsNumber]
 			   ,[SiteId]

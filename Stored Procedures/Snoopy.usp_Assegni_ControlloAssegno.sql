@@ -4,10 +4,12 @@ SET ANSI_NULLS OFF
 GO
 
 
-CREATE PROCEDURE [Snoopy].[usp_AssegniControlloAssegno]
+
+CREATE PROCEDURE [Snoopy].[usp_Assegni_ControlloAssegno]
 @AssegnoID INT,
 @UserAccessID INT,
 @controlDate DATETIME,
+@NettoIncassatoCents INT,
 @controlTimeLoc	DATETIME OUT
 AS
 
@@ -33,10 +35,10 @@ END
 --assegno is not controlled yet but we did not specify a control date
 IF EXISTS (SELECT PK_AssegnoID 
 		FROM Snoopy.[tbl_Assegni] 
-		WHERE PK_AssegnoID = @AssegnoID AND [FK_RedemCustTransID] IS NULL AND [ControlDate] IS null)
+		WHERE PK_AssegnoID = @AssegnoID AND [FK_RedemCustTransID] IS NULL AND [ControlDate] IS NULL)
 AND @controlDate IS NULL
-begin
-	raiserror('NULL @controlDate specified',16,1)
+BEGIN
+	RAISERROR('NULL @controlDate specified',16,1)
 	RETURN 1
 END
 DECLARE @ret INT
@@ -48,12 +50,13 @@ BEGIN TRY
 
 	IF EXISTS (SELECT PK_AssegnoID 
 		FROM Snoopy.[tbl_Assegni] 
-		WHERE PK_AssegnoID = @AssegnoID AND [FK_RedemCustTransID] IS NULL AND [ControlDate] IS NOT null)
+		WHERE PK_AssegnoID = @AssegnoID AND [FK_RedemCustTransID] IS NULL AND [ControlDate] IS NOT NULL)
 	BEGIN
 		--assegno is controlled : delete control information
 		UPDATE [Snoopy].[tbl_Assegni]
 		   SET [FK_ControlUserAccessID] = NULL
 			  ,[ControlTimeStampUTC] = NULL
+			  ,NettoIncassatoCents = NULL
 			  ,[ControlDate] = NULL
 		 WHERE PK_AssegnoID = @AssegnoID
 
@@ -66,6 +69,7 @@ BEGIN TRY
 		UPDATE [Snoopy].[tbl_Assegni]
 		   SET [FK_ControlUserAccessID] = @UserAccessID
 			  ,[ControlTimeStampUTC] = @controlTimeLoc
+			  ,NettoIncassatoCents = @NettoIncassatoCents
 			  ,[ControlDate] = @controlDate
 		 WHERE PK_AssegnoID = @AssegnoID
 

@@ -4,7 +4,7 @@ SET ANSI_NULLS ON
 GO
 
 
-CREATE FUNCTION [ForIncasso].[fn_GetChipMovementPartial]
+CREATE FUNCTION [deprecated].[fn_GetChipMovementPartial]
 (
     @gaming DATETIME,
 	@oggi VARCHAR(16)

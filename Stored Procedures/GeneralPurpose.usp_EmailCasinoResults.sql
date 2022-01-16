@@ -4,12 +4,13 @@ SET ANSI_NULLS ON
 GO
 
 
+
 CREATE  PROCEDURE [GeneralPurpose].[usp_EmailCasinoResults] 
-@final bit,
-@rec varchar(max),
-@cc varchar(max) = null,
-@bcc varchar(max) = 's.tettamanti@casinomendrisio.ch;l.menegolo@casinomendrisio.ch'
-as
+@final BIT,
+@rec VARCHAR(MAX),
+@cc VARCHAR(MAX) = NULL,
+@bcc VARCHAR(MAX) = 's.tettamanti@casinomendrisio.ch;l.menegolo@casinomendrisio.ch'
+AS
 /*
 
 
@@ -249,15 +250,15 @@ set @gamingdate = '6.7.2020'
 	--select @TimeStampLoc
 
 	IF @TimeStampLoc IS NOT NULL
-    begin
+    BEGIN
 		SET @subject =  left(convert(nvarchar(32),@TimeStampLoc,13),len(convert(nvarchar(32),@TimeStampLoc,13)) - 7)
-		select	@body += N'
+		SELECT	@body += N'
 			<tr style="">
 				<td class="first_column">Ultimo sotfcount:</td>
 				<td class="second_column">' + @subject + '</td>
 			</tr>'
-	end
-end
+	END
+END
 
 
 --PRINT @body
@@ -401,16 +402,16 @@ DECLARE visitcur CURSOR LOCAL READ_ONLY FAST_FORWARD FOR SELECT N'
             <td class="second_column_visite">' + CAST(ora AS VARCHAR(8)) + '</td>
             <td class="third_column_visite">' + CAST([EntrateTotali] AS VARCHAR(8)) + '</td>
             <td class="third_column_visite">' + CAST([Uscite] AS VARCHAR(8)) + '</td>
-            <td class="third_column_visite">' + CAST(Sum(Saldo) over(order by ix) AS VARCHAR(8)) + '</td>
+            <td class="third_column_visite">' + CAST(SUM(Saldo) OVER(ORDER BY ix) AS VARCHAR(8)) + '</td>
         </tr>'
 
 /*
 declare @GamingDate datetime
-set @gamingdate = '6.11.2020'
+set @gamingdate = '12.11.2021'
 select * , Sum(Saldo) over(order by ix) as Presenze
 --*/
-FROM [Snoopy].[fn_VisiteOrarie] (@GamingDate)
-where ix <= 3 or entratetotali <> 0 or uscite <> 0
+FROM [Reception].[fn_VisiteOrarie] (@GamingDate)
+WHERE ix <= 3 OR entratetotali <> 0 OR uscite <> 0
 OPEN visitcur
 
 FETCH NEXT FROM visitcur INTO @riga 
@@ -425,17 +426,17 @@ DEALLOCATE visitcur
 
 
 
-select	@body += N'</table>
+SELECT	@body += N'</table>
 </BODY>
 </HTML>'
 
-select @body AS body
+SELECT @body AS body
 
-set @subject = 'Risultato parziale Casinò Mendrisio alle ore ' +  CAST(DATEPART(HOUR,GETDATE()) AS VARCHAR(16))
-if @final = 1
-	set @subject = 'Risultato finale Casinò Mendrisio del gamingdate '  + convert(nvarchar(32),@GamingDate,103)
+SET @subject = 'Risultato parziale Casinò Mendrisio alle ore ' +  CAST(DATEPART(HOUR,GETDATE()) AS VARCHAR(16))
+IF @final = 1
+	SET @subject = 'Risultato finale Casinò Mendrisio del gamingdate '  + CONVERT(NVARCHAR(32),@GamingDate,103)
 
-exec [GeneralPurpose].[usp_EmailMessageEx] 
+EXEC [GeneralPurpose].[usp_EmailMessageEx] 
 					@subject,
 					@body, 
 					@rec, --'l.menegolo@casinomendrisio.ch',

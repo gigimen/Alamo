@@ -27,8 +27,8 @@ FROM
 	SELECT 	COUNT(*)					AS controls,
 			MAX(c.TimeStampLoc)			AS ultima,
 			i.GamingDate
-	FROM Snoopy.tbl_FasceEtaRegistrations i
-	INNER JOIN [Snoopy].[tbl_VetoControls] c ON c.PK_ControllID = i.[FK_ControlID]
+	FROM Reception.tbl_FasceEtaRegistrations i
+	INNER JOIN Reception.tbl_VetoControls c ON c.PK_ControllID = i.[FK_ControlID]
 	INNER JOIN CasinoLayout.Sites s ON s.SiteID = c.SiteID 
 	INNER JOIN CasinoLayout.SiteTypes st ON st.SiteTypeID = s.SiteTypeID
 	WHERE st.SiteTypeID = 2  --count only sesam entrances
@@ -43,7 +43,7 @@ FULL OUTER JOIN
 			COUNT(*) AS IngressiAlamo,
 			COUNT(DISTINCT Customerid) AS Visita,
 			MAX(e.entratatimestampLoc) as ultima
-	FROM Snoopy.tbl_CustomerIngressi e
+	FROM Reception.tbl_CustomerIngressi e
 	INNER JOIN CasinoLayout.Sites s ON s.SiteID = e.SiteID
 	WHERE s.SiteTypeID = 2  --count all research done only at sesam
 	GROUP BY e.GamingDate

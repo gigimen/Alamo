@@ -71,12 +71,12 @@ set @AppID = 3122003
 declare @CryptedPassword varbinary(50),@decrypted VARCHAR(50)
 
 if @UserID is null or NOT EXISTS (
-select 	u.UserID
+select 	u.UserID--,u.BeginDate,u.EndDate,GETUTCDATE()
 from	CasinoLayout.Users u
 where	u.UserID = @UserID
 --	checks that this user has started working and is not fired
-	and u.BeginDate < GetUTCDate() 
-	and (u.EndDate is null or u.EndDate > GetUTCDate())
+	and CAST(u.BeginDate AS DATE) <= CAST(GETUTCDATE() AS DATE) 
+	and (u.EndDate is null or CAST(u.EndDate AS DATE) > CAST(GETUTCDATE() AS DATE))
 )
 begin
 		raiserror('Unrecognized UserID %d entered or the user has been disabled',16,1,@UserID)

@@ -71,7 +71,7 @@ FROM
 	MIN(e.entratatimestampLoc) AS PrimoIngresso, 
 	MAX(e.entratatimestampLoc) AS UltimoIngresso, 
 	COUNT(*) AS TotIngressi
-	FROM  Snoopy.tbl_CustomerIngressi e
+	FROM  Reception.tbl_CustomerIngressi e
 	INNER JOIN CasinoLayout.Sites s ON s.SiteID = e.SiteID
 	WHERE GamingDate = @gaming
 	and s.SiteTypeID = 2 --IsSesamEntrance

@@ -16,7 +16,7 @@ SELECT
 	  ,sum(case when [Increment] >0 then 1 else 0 end)	as PosUscite
 	  ,sum(case when [Increment] <0 then 1 else 0 end)	as NegUscite
 	  ,sum([Increment])		as TotUscite
-FROM [Snoopy].[tbl_Uscite] u
+FROM Reception.tbl_Uscite u
 inner join CasinoLayout.Sites s on s.SiteID = u.SiteID
 group by  case 
 			when u.[SiteID] = 51 then 'Tappeto Veto2'

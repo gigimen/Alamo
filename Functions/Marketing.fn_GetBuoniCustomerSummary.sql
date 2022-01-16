@@ -75,14 +75,14 @@ if @withImage = 1
 		left OUTER JOIN 
 		(
 				SELECT COUNT(DISTINCT GamingDate) AS giorni,Customerid
-				FROM  Snoopy.tbl_CustomerIngressi  i
+				FROM  Reception.tbl_CustomerIngressi  i
 				WHERE CustomerID = @CustID AND i.GamingDate >= GETDATE() - @breveterm
 				GROUP BY CustomerID
 		) vBreveTerm ON vBreveTerm.CustomerID = c.CustomerID
 		left OUTER JOIN 
 		(
 			SELECT COUNT(DISTINCT gamingdate) AS giorni,Customerid
-			FROM  Snoopy.tbl_CustomerIngressi  i
+			FROM  Reception.tbl_CustomerIngressi  i
 			WHERE CustomerID = @CustID AND i.GamingDate >= GETDATE() - @lungoterm
 			GROUP BY Customerid
 		) vLungoTerm ON vLungoTerm.CustomerID = c.CustomerID
@@ -192,14 +192,14 @@ if @withImage = 1
 			left OUTER JOIN 
 			(
 					SELECT COUNT(DISTINCT GamingDate) AS giorni,Customerid
-					FROM  Snoopy.tbl_CustomerIngressi  i
+					FROM  Reception.tbl_CustomerIngressi  i
 					WHERE CustomerID = @CustID AND i.GamingDate >= GETDATE() - @breveterm
 					GROUP BY CustomerID
 			) vBreveTerm ON vBreveTerm.CustomerID = c.CustomerID
 			left OUTER JOIN 
 			(
 				SELECT COUNT(DISTINCT gamingdate) AS giorni,Customerid
-				FROM  Snoopy.tbl_CustomerIngressi  i
+				FROM  Reception.tbl_CustomerIngressi  i
 				WHERE CustomerID = @CustID AND i.GamingDate >= GETDATE() - @lungoterm
 				GROUP BY Customerid
 			) vLungoTerm ON vLungoTerm.CustomerID = c.CustomerID

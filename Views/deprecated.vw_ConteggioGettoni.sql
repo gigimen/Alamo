@@ -3,7 +3,7 @@ GO
 SET ANSI_NULLS ON
 GO
 
-CREATE VIEW [ForIncasso].[vw_ConteggioGettoni]
+CREATE VIEW [deprecated].[vw_ConteggioGettoni]
 AS
 
 /*

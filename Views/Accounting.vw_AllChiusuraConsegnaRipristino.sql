@@ -77,6 +77,7 @@ LEFT OUTER JOIN
 	WHERE tr2.OpTypeID = 5 AND msLFID.StockID = 31 --only ripristino by Mainstock
 	AND tr2.TrCancelID IS NULL
 ) RIP 
---the rispristion has been created for me the same GamingDate of th Consegna by Mainstock
-ON LF.StockID = RIP.DestStockID AND LF.GamingDate = RIP.SourceGamingDate
+--the ripristion has been created for me the same GamingDate of th Consegna by Mainstock
+-- the lifecycyle that accepted the consegna also created the ripristino
+ON LF.StockID = RIP.DestStockID AND CON.DestLifeCycleID = RIP.RipSourceLifeCycleID --LF.GamingDate = RIP.SourceGamingDate
 GO

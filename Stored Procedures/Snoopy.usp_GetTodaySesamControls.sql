@@ -15,7 +15,7 @@ select
 [TimeStampLoc] as ora,
 [searchString],
 [HitsNumber]
-from Snoopy.tbl_VetoControls
+from Reception.tbl_VetoControls
 where [SiteID] = @SiteID and [GamingDate] = @gaming
 order by [TimeStampUTC] desc
 GO

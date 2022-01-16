@@ -5,7 +5,7 @@ GO
 
 
 
-CREATE FUNCTION [Snoopy].[fn_VisiteOrarieByCKEY]
+CREATE FUNCTION [Reception].[fn_VisiteOrarieByCKEY]
 (
 	@GamingDate			DATETIME
 )
@@ -111,8 +111,8 @@ LEFT OUTER JOIN
 	   ,SUM(CASE When c.[SiteID]=50 Then 1 Else 0 End ) as CKey2
 	   ,SUM(CASE When c.[SiteID]=111 Then 1 Else 0 End ) as CKey3
 
-	FROM Snoopy.tbl_FasceEtaRegistrations i
-	INNER JOIN [Snoopy].[tbl_VetoControls] c ON c.PK_ControllID = i.[FK_ControlID]
+	FROM Reception.tbl_FasceEtaRegistrations i
+	INNER JOIN Reception.tbl_VetoControls c ON c.PK_ControllID = i.[FK_ControlID]
 	INNER JOIN CasinoLayout.Sites s ON s.SiteID = c.SiteID 
 	INNER JOIN CasinoLayout.SiteTypes st ON st.SiteTypeID = s.SiteTypeID
 	WHERE st.SiteTypeID = 2 --and c.GamingDate >= '10.01.2020' AND c.GamingDate <= '10.28.2020' --count only sesam entrances
@@ -128,7 +128,7 @@ left OUTER JOIN
 	   ,SUM(CASE When e.[SiteID]=50 Then 1 Else 0 End ) as CKey2
 	   ,SUM(CASE When e.[SiteID]=111 Then 1 Else 0 End ) as CKey3
 				,e.GamingDate
-		FROM Snoopy.tbl_CustomerIngressi e
+		FROM Reception.tbl_CustomerIngressi e
 		INNER JOIN CasinoLayout.Sites s ON s.SiteID = e.SiteID
 		WHERE s.SiteTypeID = 2  --and GamingDate >= '10.01.2020' AND GamingDate <= '10.28.2020' --count all research done only at sesam
 		group by GamingDate,datepart(day,e.entratatimestampLoc),
@@ -141,7 +141,7 @@ left outer join
 				datepart(day,[TimestampLoc])			as giorno,
 				datepart(hour,[TimestampLoc])			as ora,
 				GamingDate
-		FROM Snoopy.tbl_Uscite 
+		FROM Reception.tbl_Uscite 
 		group by GamingDate,
 				datepart(day,[TimestampLoc]),
 				datepart(hour,[TimestampLoc])

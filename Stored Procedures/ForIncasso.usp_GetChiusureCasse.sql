@@ -15,9 +15,10 @@ AS
 declare
 @gaming  datetime
 
-set @gaming = '7.14.2019'
+set @gaming = '1.15.2022'
 
 execute [ForIncasso].[usp_GetChiusureCasse] @gaming
+
 --*/
 declare
 
@@ -58,13 +59,21 @@ FROM
 	b.ExchangeRate*/
 	FROM
 	(
-		SELECT a.nome,
+/*
+
+
+declare
+@gaming  datetime
+
+set @gaming = '1.15.2022'
+
+--*/		SELECT a.nome,
 			CASE WHEN nome IN(
 			'CASSE_EUR_DENARO_TROVATO','CASSE_CHF_DENARO_TROVATO',
 			'CASSE_UTILE_VENDITAEURO',
 			'CASSE_EUR_RETT_DIFF','CASSE_CHF_RETT_DIFF',
 			'COMMISSIONI_EUR_CC_ADUNO',
-			'COMMISSIONI_EUR_ASSEGNI'
+			'COMMISSIONI_EUR_ASSEGNI','TORNEO_POKER_CASH_IN'
 			)
 				THEN -a.CHF
 				ELSE
@@ -86,20 +95,29 @@ FROM
 	)b
 	UNION ALL
 	(
-/*
+/*  vecchio modo 
 
+declare @gaming datetime
+	set @gaming = '12.29.2021'
+	SELECT 'CASSE_' + [CurrencyAcronim] + '_GETTONI' AS ForIncassoTag,
+			  SUM([Chiusura]) - SUM(Apertura) AS Amount
+		FROM [ForIncasso].[vw_DailyGettoniCasse]
+		WHERE GamingDate = @gaming
+		GROUP BY [CurrencyAcronim]
 
-declare
-@gaming  datetime
+		SELECT *,[Chiusura] - (Apertura) FROM [ForIncasso].[vw_DailyGettoniCasse]
+		WHERE GamingDate = @gaming
+SELECT * FROM 		[ForIncasso].[fn_GetChiusureCashCasse]  (@gaming)
+		WHERE ValueTypeID IN (1,36,42,59)
+	--*/
 
-set @gaming = '12.14.2021'
-
---*/
 		SELECT 'CASSE_' + CASE WHEN ValueTypeID = 59 THEN 'POK' ELSE [Acronim] END + '_GETTONI' AS ForIncassoTag,
-			  SUM([Conteggio]) - SUM(Apertura) AS Amount 
+			  SUM([Conteggio]) - SUM(Apertura) - SUM(verspoker) AS Amount 
 		FROM [ForIncasso].[fn_GetChiusureCashCasse]  (@gaming)
 		WHERE ValueTypeID IN (1,36,42,59)
 		GROUP BY CASE WHEN ValueTypeID = 59 THEN 'POK' ELSE [Acronim] END
+
+
 	)
 )c
 ORDER BY c.ForIncassoTag

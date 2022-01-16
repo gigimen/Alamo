@@ -27,7 +27,7 @@ INNER JOIN
 (
 --add to entrance all card swapped (ckey query not used)
 	select gamingdate,COUNT(distinct Customerid) As strisciate
-	FROM Snoopy.tbl_CustomerIngressi e
+	FROM Reception.tbl_CustomerIngressi e
 	INNER JOIN CasinoLayout.Sites s ON s.SiteID = e.SiteID
 	where CardID is not null  and  s.SiteTypeID = 2  --count all research done only at sesam
 	GROUP BY e.GamingDate

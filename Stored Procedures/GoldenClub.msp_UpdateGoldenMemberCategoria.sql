@@ -230,7 +230,7 @@ declare
 						WHEN COUNT(DISTINCT e.GamingDate) >		0 THEN 3			--3=bassa		da 1 a 2 entrate in @xGiorni giorni
 						ELSE 4														--4=zero		nessuna entrata in @xGiorni giorni
 					END AS FreqEntrate
-				FROM Snoopy.tbl_CustomerIngressi e
+				FROM Reception.tbl_CustomerIngressi e
 				INNER JOIN CasinoLayout.Sites s ON s.SiteID = e.SiteID
 				WHERE e.GamingDate >= GETDATE() - @xGiorni
 				AND e.IsUscita = 0

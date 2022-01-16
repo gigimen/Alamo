@@ -68,7 +68,7 @@ SELECT  @entrances = [SesamControls] + [IngressiAlamo]
       ,@gcUno = [VisiteAlamo]
       , @membri = [IngressiMembri]
       ,@membriUno = [VisiteMembri]
-  FROM [GoldenClub].[vw_CKEntrancesByGamingDate]
+  FROM Reception.vw_EntrancesByGamingDate
   WHERE GamingDate = @GamingDate
  
  IF @entrances	 IS NULL SET @entrances	 = 0

@@ -62,7 +62,7 @@ SET @tableHTML =
                     td = Entrate, '' , 
                     td = Uscite, '' , 
                     td = Sum(Saldo) over(order by ix), ''  
-              FROM [Snoopy].[fn_VisiteOrarieByCKEY] (@gaming) 
+              FROM Reception.fn_VisiteOrarieByCKEY (@gaming) 
               FOR XML PATH('tr'), TYPE   
     ) AS NVARCHAR(MAX) ) +  
     N'</table>' ;  

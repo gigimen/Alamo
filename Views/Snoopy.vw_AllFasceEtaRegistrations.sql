@@ -21,8 +21,8 @@ SELECT
 	  ,c.TimeStampLoc AS controltime
 	  ,s.FName AS SiteName
 	  ,u.LongName
-  FROM [Snoopy].[tbl_FasceEtaRegistrations] r
-  INNER JOIN [Snoopy].[tbl_VetoControls] c ON c.PK_ControllID = r.FK_ControlID
+  FROM Reception.tbl_FasceEtaRegistrations r
+  INNER JOIN Reception.tbl_VetoControls c ON c.PK_ControllID = r.FK_ControlID
   INNER JOIN CasinoLayout.Sites s ON s.SiteID = c.SiteId
   INNER JOIN CasinoLayout.Users u ON c.UserID = u.UserID
   LEFT OUTER JOIN [Snoopy].[tbl_FasceEta] f ON f.FasciaEtaID = r.FasciaEtaID

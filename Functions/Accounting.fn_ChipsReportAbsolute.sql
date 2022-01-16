@@ -8,7 +8,7 @@ CREATE   FUNCTION [Accounting].[fn_ChipsReportAbsolute]
 @valuetypeid INT
 )
 /*
-select * from [Accounting].[fn_ChipsReport] ('8.30.2020',1)
+select * from [Accounting].[fn_ChipsReportAbsolute]( '12.31.2021',1)
 order by stocktypeid,stockid
 
 */
@@ -23,6 +23,7 @@ RETURNS  @ret TABLE
 	Chips1000	INT,
 	Chips100	INT,
 	Chips50		INT,
+	Chips25		INT,
 	Chips20		INT,
 	Chips10		INT,
 	Chips5		INT,
@@ -36,9 +37,10 @@ AS
 BEGIN
 
 /*
+
 DECLARE @gaming DATETIME,@valuetypeid INT
-SET @gaming = '8.30.2020'
-SET @valuetypeid = 100
+SET @gaming = '12.31.2021'
+SET @valuetypeid = 59
 
 
 DECLARE @ret TABLE
@@ -71,6 +73,7 @@ DECLARE @chipsreport TABLE
 	Chips1000	INT,
 	Chips100	INT,
 	Chips50		INT,
+	Chips25		INT,
 	Chips20		INT,
 	Chips10		INT,
 	Chips5		INT,
@@ -84,6 +87,7 @@ DECLARE
 	@Chips1000		INT,
 	@Chips100		INT,
 	@Chips50		INT,
+	@Chips25		INT,
 	@Chips20		INT,
 	@Chips10		INT,
 	@Chips5			INT,
@@ -130,7 +134,7 @@ WHERE ValueTypeID = @valuetypeid
 INSERT INTO @ChipsRipristinati
 (StockTypeID,StockID,Tag,GamingDate,ValueTypeID,DenoID,Denomination,CurrencyID,Apertura)
 SELECT 	StockTypeID,StockID,Tag,GamingDate,ValueTypeID,DenoID,Denomination,CurrencyID,Chiusura+Ripristino AS Apertura
-from [ForIncasso].[fn_GetChipsRipristinati] (@gaming,6) --SMT
+from [ForIncasso].[fn_GetChipsRipristinati] (@gaming,6) --RISERVA
 WHERE ValueTypeID = @valuetypeid
 --CASSE
 INSERT INTO @ChipsRipristinati
@@ -139,12 +143,41 @@ SELECT 	StockTypeID,StockID,Tag,GamingDate,ValueTypeID,DenoID,Denomination,Curre
 from [ForIncasso].[fn_GetChipsRipristinati] (@gaming,7) --casse
 WHERE ValueTypeID = @valuetypeid
 --CC
-INSERT INTO @ChipsRipristinati
-(StockTypeID,StockID,Tag,GamingDate,ValueTypeID,DenoID,Denomination,CurrencyID,Apertura)
-SELECT 	StockTypeID,StockID,Tag,GamingDate,ValueTypeID,DenoID,Denomination,CurrencyID,Chiusura+Ripristino AS Apertura
-from [ForIncasso].[fn_GetChipsRipristinati] (@gaming,4) --cc
-WHERE ValueTypeID = @valuetypeid
+IF @valuetypeid =59
+--dobbiamo anche contare il versmento da MS 
+	INSERT INTO @ChipsRipristinati
+	(StockTypeID,StockID,Tag,GamingDate,ValueTypeID,DenoID,Denomination,CurrencyID,Apertura)
+	SELECT 	StockTypeID,StockID,Tag,GamingDate,ValueTypeID,c.DenoID,Denomination,CurrencyID,
+	Chiusura + Ripristino + ISNULL(vers.Quantity,0) AS Apertura
+	from [ForIncasso].[fn_GetChipsRipristinati] (@gaming,4) c--cc
+	INNER JOIN 
+	(
+	/*
+	DECLARE @gaming DATETIME,	@oggi VARCHAR(16)
 
+	SET		@gaming = '12.19.2021'
+	set 	@oggi = 'OGGI'
+
+
+	--*/	
+		SELECT 
+		DenoID,
+		DestLifeCycleID,
+		[Quantity]
+		from Accounting.vw_AllTransactionDenominations 
+		WHERE ValueTypeID = 59--pokerchips
+		AND SourceStockID = 31 AND OpTypeID = 4 AND DestStockID = 46 --cc
+		AND DestLifeCycleID IS NOT NULL --onlz if accepted bz cassa centra;e
+	) vers ON vers.DenoID = c.DenoID AND vers.DestLifeCycleID = c.LifeCycleID
+
+	WHERE ValueTypeID = @valuetypeid
+ELSE
+	INSERT INTO @ChipsRipristinati
+	(StockTypeID,StockID,Tag,GamingDate,ValueTypeID,DenoID,Denomination,CurrencyID,Apertura)
+	SELECT 	StockTypeID,StockID,Tag,GamingDate,ValueTypeID,DenoID,Denomination,CurrencyID,
+	Chiusura+Ripristino AS Apertura
+	from [ForIncasso].[fn_GetChipsRipristinati] (@gaming,4) --cc
+	WHERE ValueTypeID = @valuetypeid
 --dotazione
 
 INSERT INTO @ChipsRipristinati
@@ -219,6 +252,7 @@ INSERT INTO @chipsreport
     Chips1000,
     Chips100,
     Chips50,
+    Chips25,
     Chips20,
     Chips10,
     Chips5,
@@ -237,6 +271,7 @@ select
 	IsNull(C1000.Ripristinato,0)	as Chips1000,
 	IsNull(C100.Ripristinato,0) 	as Chips100,
 	IsNull(C50.Ripristinato,0) 		as Chips50,
+	IsNull(C25.Ripristinato,0) 		as Chips25,
 	IsNull(C20.Ripristinato,0) 		as Chips20,
 	IsNull(C10.Ripristinato,0) 		as Chips10,
 	IsNull(C5.Ripristinato,0) 		as Chips5,
@@ -247,6 +282,7 @@ select
 	IsNull(C1000.Ripristinato,0)	* 1000 +
 	IsNull(C100.Ripristinato,0) 	* 100 +
 	IsNull(C50.Ripristinato,0) 		* 50 +
+	IsNull(C25.Ripristinato,0) 		* 25 +
 	IsNull(C20.Ripristinato,0) 		* 20 +
 	IsNull(C10.Ripristinato,0) 		* 10 +
 	IsNull(C5.Ripristinato,0) 		* 5 +
@@ -257,6 +293,7 @@ left outer join (select StockID,(isnull(Apertura,0)) as Ripristinato from @Chips
 left outer join (select StockID,(isnull(Apertura,0)) as Ripristinato from @ChipsRipristinati where Denomination = 1000	 ) C1000		ON C1000.StockID = s.StockID 
 left outer join (select StockID,(isnull(Apertura,0)) as Ripristinato from @ChipsRipristinati where Denomination = 100	 ) C100		ON C100.StockID = s.StockID 
 left outer join (select StockID,(isnull(Apertura,0)) as Ripristinato from @ChipsRipristinati where Denomination = 50	 ) C50		ON C50.StockID = s.StockID 
+left outer join (select StockID,(isnull(Apertura,0)) as Ripristinato from @ChipsRipristinati where Denomination = 25	 ) C25		ON C25.StockID = s.StockID 
 left outer join (select StockID,(isnull(Apertura,0)) as Ripristinato from @ChipsRipristinati where Denomination = 20	 ) C20		ON C20.StockID = s.StockID 
 left outer join (select StockID,(isnull(Apertura,0)) as Ripristinato from @ChipsRipristinati where Denomination = 10	 ) C10		ON C10.StockID = s.StockID 
 left outer join (select StockID,(isnull(Apertura,0)) as Ripristinato from @ChipsRipristinati where Denomination = 5		 ) C5		ON C5.StockID = s.StockID 
@@ -279,6 +316,7 @@ BEGIN
 		Chips1000,
 		Chips100,
 		Chips50,
+		Chips25,
 		Chips20,
 		Chips10,
 		Chips5,
@@ -297,6 +335,7 @@ BEGIN
 	0,--	@Chips1000		,
 	20,--	@Chips100		,
 	20,--	@Chips50		,
+	0,--	@Chips25		,
 	20,--	@Chips20		,
 	20,--	@Chips10		,
 	20,--	@Chips5			,
@@ -312,6 +351,7 @@ SELECT @Chips5000	=	SUM(CASE WHEN stockid = 1001 THEN Chips5000		ELSE 0 end) - S
 SELECT @Chips1000	=	SUM(CASE WHEN stockid = 1001 THEN Chips1000		ELSE 0 end) - SUM(CASE WHEN stockid = 1001 THEN 0 ELSE Chips1000	end) FROM @chipsreport
 SELECT @Chips100	=	SUM(CASE WHEN stockid = 1001 THEN Chips100		ELSE 0 end) - SUM(CASE WHEN stockid = 1001 THEN 0 ELSE Chips100		END) FROM @chipsreport
 SELECT @Chips50		=	SUM(CASE WHEN stockid = 1001 THEN Chips50		ELSE 0 end) - SUM(CASE WHEN stockid = 1001 THEN 0 ELSE Chips50		end) FROM @chipsreport
+SELECT @Chips25		=	SUM(CASE WHEN stockid = 1001 THEN Chips25		ELSE 0 end) - SUM(CASE WHEN stockid = 1001 THEN 0 ELSE Chips25		end) FROM @chipsreport
 SELECT @Chips20		=	SUM(CASE WHEN stockid = 1001 THEN Chips20		ELSE 0 end) - SUM(CASE WHEN stockid = 1001 THEN 0 ELSE Chips20		end) FROM @chipsreport
 SELECT @Chips10		=	SUM(CASE WHEN stockid = 1001 THEN Chips10		ELSE 0 end) - SUM(CASE WHEN stockid = 1001 THEN 0 ELSE Chips10		end) FROM @chipsreport
 SELECT @Chips5		=	SUM(CASE WHEN stockid = 1001 THEN Chips5		ELSE 0 end) - SUM(CASE WHEN stockid = 1001 THEN 0 ELSE Chips5		end) FROM @chipsreport
@@ -330,6 +370,7 @@ INSERT INTO @chipsreport
     Chips1000,
     Chips100,
     Chips50,
+    Chips25,
     Chips20,
     Chips10,
     Chips5,
@@ -348,6 +389,7 @@ VALUES
 	@Chips1000		,
 	@Chips100		,
 	@Chips50		,
+	@Chips25		,
 	@Chips20		,
 	@Chips10		,
 	@Chips5			,
@@ -367,6 +409,7 @@ INSERT INTO @ret
     Chips1000,
     Chips100,
     Chips50,
+    Chips25,
     Chips20,
     Chips10,
     Chips5,
@@ -383,6 +426,7 @@ SELECT     Tag,
     Chips1000,
     Chips100,
     Chips50,
+    Chips25,
     Chips20,
     Chips10,
     Chips5,

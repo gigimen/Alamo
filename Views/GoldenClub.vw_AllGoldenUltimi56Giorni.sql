@@ -11,7 +11,7 @@ AS
 	MIN(e.gamingDate)	AS dal,
 	MAX(e.gamingdate) AS Al,
 	COUNT(DISTINCT e.Gamingdate) AS totEntrate
-	FROM Snoopy.tbl_CustomerIngressi e
+	FROM Reception.tbl_CustomerIngressi e
 	INNER JOIN CasinoLayout.Sites s ON s.SiteID = e.SiteID
 	WHERE e.gamingdate >= GETDATE() - 56
 	AND e.IsUscita = 0
