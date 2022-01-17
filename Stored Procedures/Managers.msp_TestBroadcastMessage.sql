@@ -42,7 +42,7 @@ begin
 	raiserror('Errore in lettura numero porta di comunicazione',16,1)
 	return(1)
 end
-/*
+
 select @network = VarValue from [GeneralPurpose].[ConfigParams] where VarName = 'AlamoMessagesNetwork'
 if @network is null
 begin
@@ -55,10 +55,10 @@ begin
 	raiserror('Errore in lettura maschera rete di comunicazione',16,1)
 	return(1)
 END
-*/
 
-SET @network = '172.18.18.255'-- ne.VarValue
-set @mask = '255.255.255.0'--ma.VarValue
+
+--SET @network = '172.18.18.255'-- ne.VarValue
+--set @mask = '255.255.255.0'--ma.VarValue
 
 /*the old way with extended stored procedure
 exec master.dbo.xp_AlamoBroadcast @port,@network,@payload,0

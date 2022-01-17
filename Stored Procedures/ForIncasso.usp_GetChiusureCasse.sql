@@ -15,10 +15,9 @@ AS
 declare
 @gaming  datetime
 
-set @gaming = '1.15.2022'
+set @gaming = '7.14.2019'
 
 execute [ForIncasso].[usp_GetChiusureCasse] @gaming
-
 --*/
 declare
 
@@ -59,21 +58,13 @@ FROM
 	b.ExchangeRate*/
 	FROM
 	(
-/*
-
-
-declare
-@gaming  datetime
-
-set @gaming = '1.15.2022'
-
---*/		SELECT a.nome,
+		SELECT a.nome,
 			CASE WHEN nome IN(
 			'CASSE_EUR_DENARO_TROVATO','CASSE_CHF_DENARO_TROVATO',
 			'CASSE_UTILE_VENDITAEURO',
 			'CASSE_EUR_RETT_DIFF','CASSE_CHF_RETT_DIFF',
 			'COMMISSIONI_EUR_CC_ADUNO',
-			'COMMISSIONI_EUR_ASSEGNI','TORNEO_POKER_CASH_IN'
+			'COMMISSIONI_EUR_ASSEGNI'
 			)
 				THEN -a.CHF
 				ELSE

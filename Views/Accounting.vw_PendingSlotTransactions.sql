@@ -7,9 +7,10 @@ GO
 
 
 
+
 CREATE  VIEW [Accounting].[vw_PendingSlotTransactions]
 AS
-
+/*
 SELECT [OutIpAddrDesc]
       ,[OutIpAddr]
       ,[ValidationNumber]
@@ -28,5 +29,23 @@ SELECT [OutIpAddrDesc]
       ,[JpName]	
       ,[JpInstance]	
   FROM [DRGT].drMenHelper.[Slots].[vw_PendingTransactions]
+  */
+
+
+
+SELECT [OutIpAddrDesc]
+      ,[OutIpAddr]
+      ,[ValidationNumber]
+      ,[AmountCents]
+      ,[Currency]
+      ,[IssueTimeUTC]
+      ,[IssueTimeLoc]
+      ,[GamingDate]
+      ,[OptypeId]
+      ,[OptypeName]
+      ,[JpID]
+      ,[JpName]
+      ,[JpInstance]
+  FROM [drFakMendrisio].[dbo].[vw_PendingSlotTransactions]
 
 GO

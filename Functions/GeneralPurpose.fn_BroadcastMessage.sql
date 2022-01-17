@@ -43,7 +43,7 @@ SELECT
 		(
 		'{F3B79F92-3917-4a42-90EB-0F854EB683E7}' --alamo guid
 		,1 --version number
-		,'172.18.18.255'-- ne.VarValue
+		,'192.168.1.255'--172.18.18.255'-- ne.VarValue
 		,'255.255.255.0'--ma.VarValue
 		,CAST(po.VarValue as int)
 		,@payload
