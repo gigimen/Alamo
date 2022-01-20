@@ -14,7 +14,8 @@ CREATE PROCEDURE [Accounting].[usp_CreatePokerTransactionXML]
 @TransID			INT			OUTPUT  ,
 @TransTimeLoc		DATETIME	OUTPUT  ,
 @TransTimeUTC		DATETIME	OUTPUT  ,
-@pending			INT			OUTPUT
+@pending			INT			OUTPUT	,
+@SnapshotID			INT			OUTPUT
 AS
 
 DECLARE @gamingdate	DATETIME,
@@ -59,7 +60,7 @@ BEGIN
     END
 
 	--we have to open the lifecycle
-	declare @stockLFSSID INT
+
 
 	print 'Open the stock ' + str(@sourceStockID)
 	EXEC @ret = Accounting.usp_OpenLifeCycle 
@@ -68,7 +69,7 @@ BEGIN
 			null,
 			null,
 			@sourceLifeCycleID output,
-			@stockLFSSID output,
+			@SnapshotID output,
 			@gamingdate output,
 			@TransTimeLoc output,
 			@TransTimeUTC output
@@ -162,7 +163,7 @@ BEGIN TRY
 				)
 
 
-	SET @TransID = @@IDENTITY
+	SET @TransID = IDENT_CURRENT ('Accounting.tbl_Transactions')
 
 	IF @values IS NOT NULL AND LEN(@values) > 0
 	BEGIN
@@ -205,7 +206,7 @@ BEGIN TRY
 				@TransTimeUTC,
 				@TransTimeLoc
 			)
-	
+		SET @SnapshotID = IDENT_CURRENT ('Accounting.tbl_Snapshots')
 	END
 
 	COMMIT TRANSACTION trn_CreatePokerTransaction
