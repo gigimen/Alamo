@@ -11,6 +11,7 @@ GO
 
 
 
+
 CREATE VIEW [Snoopy].[vw_AllAssegniEx]
 WITH SCHEMABINDING
 AS
@@ -45,6 +46,7 @@ SELECT
 	EMISS.SourceGamingDate					AS GamingDate,
 	EMISS.SourceTag							AS Tag,
 	EMISS.SourceStockID						AS StockID,
+	EMISS.SourceStockTypeID					AS StockTypeID,
 	EMISS.OraLoc							AS EmissionTime,
 	GeneralPurpose.fn_UTCToLocal(1,a.ControlTimeStampUTC) AS ControlTime,
 	a.ControlDate,
