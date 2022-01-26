@@ -33,7 +33,7 @@ GROUP BY CurrencyAcronim,Tag
 
 INSERT INTO @gastro ([ForIncassoTag],[Amount]) SELECT 'GASTRO_FONDO_RISTO_CHF' AS 'ForIncassoTag',1800 AS Amount
 INSERT INTO @gastro ([ForIncassoTag],[Amount]) SELECT 'GASTRO_FONDO_BAR_CHF' AS 'ForIncassoTag',1500 AS Amount
-INSERT INTO @gastro ([ForIncassoTag],[Amount]) SELECT 'GASTRO_FONDO_RISTO_EUR' AS 'ForIncassoTag',0 AS Amount
+INSERT INTO @gastro ([ForIncassoTag],[Amount]) SELECT 'GASTRO_FONDO_RISTO_EUR' AS 'ForIncassoTag',2000 AS Amount
 INSERT INTO @gastro ([ForIncassoTag],[Amount]) SELECT 'GASTRO_FONDO_BAR_EUR' AS 'ForIncassoTag',0 AS Amount
 
 RETURN 

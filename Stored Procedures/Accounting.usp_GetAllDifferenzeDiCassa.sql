@@ -29,6 +29,7 @@ DECLARE
 @LifeCycleID				INT,
 @SnapshotTypeID				INT,
 @StockID					INT,
+@StockTypeID				INT,
 @RettificaRestituzioneID	INT,
 @RestituzioneID				INT,
 @RestGamingDate				DATETIME
@@ -57,6 +58,7 @@ DECLARE  @lf2 TABLE
 (
 LifeCycleID	 			int,	
 StockID					INT,
+StockTypeID				INT,
 Tag						VARCHAR(32),
 OwnerID					INT,
 OwnerName				VARCHAR(256),
@@ -99,7 +101,8 @@ SELECT
 	Tag , 
 	LifeCycleID ,
 	SnapshotTypeID,
-	StockID
+	StockID,
+	StockTypeID
 from Accounting.vw_AllSnapshotsEx 
 WHERE GamingDate = @gaming 
 AND SnapshotTypeID IN (3,4) --only Chiusura and change owner
@@ -114,7 +117,8 @@ FETCH NEXT FROM lf_cursor INTO
 @Tag						,
 @LifeCycleID				,
 @SnapshotTypeID				,
-@StockID					
+@StockID	,
+@StockTypeID
 
 WHILE (@@FETCH_STATUS <> -1 and @LifeCycleID IS NOT null)
 BEGIN
@@ -161,6 +165,7 @@ BEGIN
 	(
 		LifeCycleID	 		,
 		StockID				,
+		StockTypeID,
 		Tag					,
 		OwnerID				,
 		OwnerName			,
@@ -186,6 +191,7 @@ BEGIN
 	SELECT 
 		@LifeCycleID,
 		@StockID,
+		@StockTypeID,
 		@Tag,
 		@OwnerID,
 		@OwnerName,
@@ -219,7 +225,8 @@ BEGIN
 		@Tag						,
 		@LifeCycleID				,
 		@SnapshotTypeID				,
-		@StockID					
+		@StockID					,
+		@StockTypeID
 END
 
 CLOSE lf_cursor
@@ -234,6 +241,7 @@ SELECT
 	@gaming AS GamingDate,
 	c.Tag,
 	c.StockID,
+	c.StockTypeID,
 	c.LifeCycleID,
 	c.Operazione,
 	c.SnapshotTypeID,
@@ -261,6 +269,7 @@ FROM
 	SELECT 
 	a.Tag,
 	a.StockID,
+	a.StockTypeID,
 	a.LifeCycleID,
 	a.Operazione,
 	a.SnapshotTypeID,

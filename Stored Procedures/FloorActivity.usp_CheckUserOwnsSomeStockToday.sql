@@ -10,6 +10,8 @@ CREATE procedure [FloorActivity].[usp_CheckUserOwnsSomeStockToday]
 @StockTag varchar(50) output,
 @LFID int output,
 @today datetime output,
+@openUTC datetime output,
+@openLoc datetime output,
 @IsOpen bit output,
 @IsToday bit output
 AS
@@ -40,7 +42,9 @@ PRINT @today
 select 	
 	@StockID = StockID,
 	@LFID = LifeCycleID,
-	@StockTag = Tag 
+	@StockTag = Tag,
+	@openUTC = ApTimeUTC,
+	@openLoc = [ApTimeLoc] 
 FROM [FloorActivity].[vw_AllLastStockOwners] 
 WHERE GamingDate = DATEADD (DAY,-1,@today)
 AND ChSnapshotID IS NULL --torlley is still open
@@ -58,6 +62,7 @@ BEGIN
 END
 ELSE
 BEGIN
+
 	SET @IsToday = 1
 	--first check that some change owner snapshot exists today
 	--FOR STOCK OF THAT STOCK TYPE
@@ -74,7 +79,9 @@ BEGIN
 	print 'there was some change owner'
 		select 	@StockID = AA.StockID,
 			@LFID = ss.LifeCycleID,
-			@StockTag = st.Tag 
+			@StockTag = st.Tag,
+			@openUTC = ss.SnapshotTime,
+			@openLoc = ss.SnapshotTimeLoc
 			from Accounting.tbl_Snapshots ss 
 			inner join Accounting.tbl_LifeCycles lf on lf.LifeCycleID = ss.LifeCycleID 
 			inner join CasinoLayout.Stocks st on st.StockID = lf.StockID
@@ -100,7 +107,9 @@ BEGIN
 	begin
 		select  @StockID = st.StockID,
 			@LFID = lf.LifeCycleID,
-			@StockTag = Tag 
+			@StockTag = Tag,
+			@openUTC = ss.SnapshotTime,
+			@openLoc = ss.SnapshotTimeLoc 
 			from Accounting.tbl_Snapshots ss 
 			inner join Accounting.tbl_LifeCycles lf on lf.LifeCycleID = ss.LifeCycleID 
 			inner join CasinoLayout.Stocks st on st.StockID = lf.StockID

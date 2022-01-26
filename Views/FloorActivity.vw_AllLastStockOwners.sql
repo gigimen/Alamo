@@ -3,6 +3,7 @@ GO
 SET ANSI_NULLS ON
 GO
 
+
 CREATE VIEW [FloorActivity].[vw_AllLastStockOwners]
 WITH SCHEMABINDING
 AS
@@ -13,7 +14,8 @@ SELECT
 	st.Tag, 
 	st.StockTypeID, 
 	AP.LifeCycleSnapshotID											AS ApSnapshotID,
-	GeneralPurpose.fn_UTCToLocal(1,AP.SnapshotTime)			AS ApTimeLoc,
+	AP.SnapshotTime													AS ApTimeUTC,
+	GeneralPurpose.fn_UTCToLocal(1,AP.SnapshotTime)					AS ApTimeLoc,
 	APUID.UserID													AS ApUserID,
 	APUID.FirstName + ' ' + APUID.LastName 							AS ApUserName,
 	APConfUID.UserID 												AS ApConfUserID,	
@@ -48,7 +50,7 @@ FROM   	Accounting.tbl_LifeCycles lf
 	--here goes Chiusura
 	LEFT OUTER JOIN Accounting.tbl_Snapshots ch ON ch.LifeCycleID = lf.LifeCycleID
 	AND ch.SnapshotTypeID = 3 --Chiusura
-	and ch.LCSnapShotCancelID IS NULL
+	AND ch.LCSnapShotCancelID IS NULL
 	LEFT OUTER JOIN FloorActivity.tbl_UserAccesses chuaid ON chuaid.UserAccessID = ch.UserAccessID
 	LEFT OUTER JOIN CasinoLayout.Users chUID ON chUID.UserID = chuaid.UserID
 	LEFT OUTER JOIN Accounting.tbl_Snapshot_Confirmations CHConf	ON CHConf.LifeCycleSnapshotID = ch.LifeCycleSnapshotID
@@ -58,14 +60,14 @@ FROM   	Accounting.tbl_LifeCycles lf
 	LEFT OUTER JOIN
 	(
 		--get last change owner snapshotid
-		select 
+		SELECT 
 			lf1.LifeCycleID,
-			max(chown.LifeCycleSnapshotID) as LastSnapshotID
-		from Accounting.tbl_Snapshots chown 
-		inner join Accounting.tbl_LifeCycles lf1 on lf1.LifeCycleID = chown.LifeCycleID 
-		where chown.SnapshotTypeID = 4 --CHANGEOWNER
-		and chown.LCSnapShotCancelID IS NULL
-		group by lf1.LifeCycleID	
+			MAX(chown.LifeCycleSnapshotID) AS LastSnapshotID
+		FROM Accounting.tbl_Snapshots chown 
+		INNER JOIN Accounting.tbl_LifeCycles lf1 ON lf1.LifeCycleID = chown.LifeCycleID 
+		WHERE chown.SnapshotTypeID = 4 --CHANGEOWNER
+		AND chown.LCSnapShotCancelID IS NULL
+		GROUP BY lf1.LifeCycleID	
 	) a ON a.LifeCycleID = lf.LifeCycleID
 	LEFT OUTER JOIN Accounting.tbl_Snapshots chown ON a.LastSnapshotID = chown.LifeCycleSnapshotID
 	LEFT OUTER JOIN FloorActivity.tbl_UserAccesses chownuaid ON chownuaid.UserAccessID = chown.UserAccessID
