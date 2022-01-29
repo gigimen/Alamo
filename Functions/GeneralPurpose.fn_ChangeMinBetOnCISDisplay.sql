@@ -15,14 +15,14 @@ BEGIN
 	SELECT @ip = varValue FROM GeneralPurpose.ConfigParams WHERE VarName = 'CISServerIpAddress'
 	SELECT @port = CAST(varValue AS INT) FROM GeneralPurpose.ConfigParams WHERE VarName = 'CISServerPortNumber'
 
-	IF (@minbet IS NULL OR @minbet NOT IN (10,20) ) 
+/*IF (@minbet IS NULL OR @minbet NOT IN (10,20) ) 
 	BEGIN
 		--raiserror('Invalid spin number %d specified',16,-1,@res)
 		SET @ret = 'Invalid @minbet specified'
 	END
 	ELSE
 	BEGIN
-		SET @table = REPLACE(@tablename,' ','')
+*/		SET @table = REPLACE(@tablename,' ','')
 
 		DECLARE @cmd NVARCHAR(4000)
 		IF LEFT(@table,2) ='AR'	
@@ -49,7 +49,7 @@ BEGIN
 					@port--,1000
 				) 
 
-  	END
+--  	END
 	RETURN @ret
 END
 
