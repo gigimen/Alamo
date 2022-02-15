@@ -42,11 +42,19 @@ END
 set @LifeCycleID = 160363
 
 declare @t as varchar(max)
-set @t = '<ROOT><DENO denoid="157" exrate="1.000000" qty="3" /><DENO denoid="159" exrate="1.000000" qty="5" /><DENO denoid="160" exrate="1.000000" qty="41" /><DENO denoid="161" exrate="1.000000" qty="148" /></ROOT>'
+set @t = '<ROOT>
+<DENO denoid="103" stockid="75" qty="0" exrate="1.0" />  --kiosk-chf1
+<DENO denoid="103" stockid="79" qty="0" exrate="1.0" />  --kiosk-chf2
+<DENO denoid="103" stockid="85" qty="0" exrate="1.0" />  --gastro
+<DENO denoid="163" stockid="80" qty="0" exrate="1.0" />  --kiosk-eur1
+<DENO denoid="163" stockid="81" qty="0" exrate="1.0" />  --kiosk-eur2
+<DENO denoid="103" stockid="83" qty="0" exrate="1.0" /> --tronc gastro
+</ROOT>'
 declare @XML xml = @t
 select 
 T.N.value('@denoid', 'int') as DenoID,
 T.N.value('@qty', 'int') as conteggiouscita,
+T.N.value('@stockid', 'int') as stockid,
 T.N.value('@exrate', 'float') as exrate,
 T.N.value('@qty', 'int') * T.N.value('@exrate', 'float') as value
 from @XML.nodes('ROOT/DENO') as T(N)

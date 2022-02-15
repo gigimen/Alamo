@@ -2,6 +2,8 @@ SET QUOTED_IDENTIFIER ON
 GO
 SET ANSI_NULLS ON
 GO
+
+
 CREATE VIEW [Accounting].[vw_AllConteggiDenominations]
 WITH SCHEMABINDING
 AS
@@ -14,6 +16,7 @@ SELECT
 	con.GamingDate,
 	v.[StockID],
 	s.Tag,
+	s.FName,
 	s.StockTypeID,
 	v.DenoID, 
 	d.FDescription AS DenoName,

@@ -498,9 +498,9 @@ LEFT OUTER JOIN
 		d.GamingDate,
 		d.StockID,
 		d.CurrencyID,
-		SUM(d.Quantity*d.Denomination) AS Quantity
+		SUM(CAST(d.Quantity AS FLOAT) *d.Denomination) AS Quantity
 	  FROM [Accounting].[vw_AllConteggiDenominations] d
-	  WHERE d.SnapshotTypeID = 23 AND d.ValueTypeID = 59--conteggio tronc poker eur (solo gettoni poker)
+	  WHERE d.SnapshotTypeID = 23 
 	  GROUP BY d.GamingDate,d.StockID,d.CurrencyID
 ) tronc ON tronc.StockID = s.StockID AND tronc.GamingDate = s.GamingDate AND sc.CurrencyID = tronc.CurrencyID
 WHERE  NOT (s.StockID = 82 AND s.GamingDate = '7.14.2019') --exclude faked first UTH1 Lifecycle

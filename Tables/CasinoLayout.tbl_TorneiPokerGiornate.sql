@@ -14,8 +14,6 @@ CREATE TABLE [CasinoLayout].[tbl_TorneiPokerGiornate]
 GO
 ALTER TABLE [CasinoLayout].[tbl_TorneiPokerGiornate] ADD CONSTRAINT [PK_tbl_TorneiPokerGiornate] PRIMARY KEY CLUSTERED  ([PK_TPGiornataID]) ON [PRIMARY]
 GO
-CREATE UNIQUE NONCLUSTERED INDEX [IX_tbl_TorneiPokerGiornate_By_Gamingdate] ON [CasinoLayout].[tbl_TorneiPokerGiornate] ([GamingDate]) ON [PRIMARY]
-GO
 CREATE UNIQUE NONCLUSTERED INDEX [IX_tbl_TorneiPokerGiornate_GamingDate] ON [CasinoLayout].[tbl_TorneiPokerGiornate] ([GamingDate], [FK_TorneoID]) ON [PRIMARY]
 GO
 ALTER TABLE [CasinoLayout].[tbl_TorneiPokerGiornate] ADD CONSTRAINT [FK_tbl_TorneiPokerGiornate_tbl_TorneiPoker] FOREIGN KEY ([FK_TorneoID]) REFERENCES [CasinoLayout].[tbl_TorneiPoker] ([PK_TorneoID])

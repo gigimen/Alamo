@@ -75,7 +75,7 @@ BEGIN
 	where s.StockTypeID = (select ForStockTypeID	from [CasinoLayout].[SnapshotTypes] where SnapshotTypeID = @ssTypeID)
 		and  @gaming >= s.FromGamingDate 
 		AND (@gaming <= s.TillGamingDate OR s.TillGamingDate IS null) 
-		
+		AND s.StockID <> 85 --nascondi Gastro dal conteggio della Gastro (solo Bar e Ristorante)
 	SELECT
 		s.Tag
 		,s.StockTypeID
@@ -114,6 +114,7 @@ BEGIN
 	WHERE s.StockTypeID = (SELECT ForStockTypeID	FROM [CasinoLayout].[SnapshotTypes] WHERE SnapshotTypeID = @ssTypeID)
 		AND  @gaming >= s.FromGamingDate 
 		AND (@gaming <= s.TillGamingDate OR s.TillGamingDate IS NULL) 
+		AND s.StockID <> 85 --nascondi Gastro dal conteggio della Gastro (solo Bar e Ristorante)
 		
 	ORDER BY  s.StockID
 END

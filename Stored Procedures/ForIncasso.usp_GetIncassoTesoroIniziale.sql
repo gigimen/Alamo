@@ -141,8 +141,38 @@ where StockID = 47 and SnapshotTypeID = 6 and GamingDate = @giornoprima
 
 
 declare @giornoprima			datetime
-set @giornoprima = '4.19.2020'
+set @giornoprima = '2.9.2022'
 --*/
+
+SELECT case
+when stockid = 75	then 'KIOSK_STOCK_APERTURA_CHF1'
+when stockid = 79	then 'KIOSK_STOCK_APERTURA_CHF2'
+when stockid = 85	then 'GASTRO_TESORO_APERTURA'
+when stockid = 80	then 'KIOSK_STOCK_APERTURA_EUR1'
+when stockid = 81	then 'KIOSK_STOCK_APERTURA_EUR2'
+END AS ForIncassoTag
+,Totale as Amount
+ from [Accounting].[vw_ChiusuraFormIncasso]
+where GamingDate = (
+
+	select max(GamingDate) from [Accounting].[vw_AllConteggiDenominations]
+	where SnapshotTypeID = 6 and GamingDate <= @giornoprima
+	AND StockID IN(
+	75,
+	79,
+	85,
+	80,
+	81
+	)
+)
+AND StockID IN(
+75,
+79,
+85,
+80,
+81
+)
+/*LM:11.20.2022 vecchio modo
 SELECT case
 when stockid = 75	then 'KIOSK_STOCK_APERTURA_CHF1'
 when stockid = 79	then 'KIOSK_STOCK_APERTURA_CHF2'
@@ -171,6 +201,7 @@ AND StockID IN(
 80,
 81
 )
+*/
 
 union all
 --aggiungiamo apertura tesoro

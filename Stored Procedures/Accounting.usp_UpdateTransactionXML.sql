@@ -15,8 +15,7 @@ begin
 	raiserror('Cannot specify a null @TransID ',16,-1)
 	RETURN (1)
 end
-	select * from Accounting.tbl_TransactionValues
-	where TransactionID = @transID 
+
 /*
 
 set @values = '<ROOT>

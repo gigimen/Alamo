@@ -9,9 +9,12 @@ GO
 CREATE FUNCTION [Accounting].[fn_Format_for_Sirio] (
 @ContoBase	VARCHAR(32),
 @contropartita VARCHAR(32),
-@Importo	float,
-@currency	INT,
-@Gamingdate datetime
+@Importo		FLOAT,
+@EmissGamingdate DATETIME,
+@ControlGamingdate DATETIME,
+@descr		VARCHAR(60) = NULL,
+@cco		VARCHAR(60) = NULL
+
 )  
 RETURNS VARCHAR(1024) 
 AS  
@@ -25,6 +28,8 @@ print   [Accounting].[fn_Format_for_Sirio] ('33002.1','10020',100.45,0,'12.2.202
 declare
 @ContoBase	VARCHAR(32),
 @contropartita VARCHAR(32),
+@currencyContoBase	INT,
+@currencyControPartita	INT,
 @Importo	float,
 @currency	INT,
 @Gamingdate datetime
@@ -44,28 +49,41 @@ print [Accounting].[fn_Format_for_Sirio] (
 )  
 --*/
 	DECLARE 
-	@descr		NVARCHAR(50),
-	@cco		NVARCHAR(50),
 	@data		INT,
+	@currencyContoBase	INT,
+	@currencyControPartita	INT,
+	@contoCCo			VARCHAR(50),
 	@i			VARCHAR(1024),
 	@eurorate	FLOAT,
 	@chf		float
 
 	IF @Importo = 0
 		RETURN NULL
+SELECT @currencyContoBase = CurrencyID,@contoCCo = CCO FROM [Accounting].[tbl_SirioConti] WHERE [conto] = @ContoBase
+SELECT @currencyControPartita = CurrencyID FROM [Accounting].[tbl_SirioConti] WHERE [conto] = @contropartita
 
-SELECT 
-      @descr = [descr]
-      ,@cco = [Cco]
-      ,@data =[data]
-  FROM [Accounting].[tbl_SirioConti]
-	WHERE [conto] = @ContoBase
-	AND 
-		(
-		( [indice] = 1 AND @Importo > 0)
-		OR
-		( [indice] = 2 AND @Importo < 0)
-		)
+IF @currencyContoBase IS NULL OR @currencyControPartita IS NULL
+	RETURN 'Manca il conto nella tabella [Accounting].[tbl_SirioConti]'
+
+IF @descr IS NULL
+BEGIN
+	SELECT 
+		  @descr = [descr]
+		  ,@cco = [Cco]
+		  ,@data =[data]
+	  FROM [Accounting].[tbl_SirioConti]
+		WHERE [conto] = @ContoBase
+		AND 
+			(
+			( [indice] = 1 AND @Importo > 0)
+			OR
+			( [indice] = 2 AND @Importo < 0)
+			)
+END
+ELSE
+BEGIN
+	SET @data = NULL
+END
 		--SELECT @descr
 	--registrazione con o senza CCO
 /*
@@ -119,22 +137,29 @@ Parte record tipo 0048: (registrazione contabile)
 
 
 	--data
-	SET @i = @i + convert(VARCHAR(32), @Gamingdate, 104)
+	SET @i = @i + convert(VARCHAR(32), @ControlGamingdate, 104)
     
 	 --giustificativo      
-	SET @i = @i + CASE WHEN @currency = 0 THEN 'INCASSO EUR' ELSE 'INCASSO' END
+	SET @i = @i + CASE WHEN @currencyContoBase = 0 THEN 'INCASSO EUR' ELSE 'INCASSO' END
  	
 	--fill with spaces up to 47 chars
 	SET @i = @i + SPACE(46 - LEN(@i))
 
 
-	 --giustificativo      
+	 --descrizione      
 	SET @i = @i + @descr
 	IF @data = 1
-		SET @i = @i + ' ' + CONVERT(VARCHAR(32), @Gamingdate, 104)
+		SET @i = @i + ' ' + CONVERT(VARCHAR(32), @EmissGamingdate, 104)
 
 	--fill with spaces up to 121 chars
-	SET @i = @i + SPACE(121 - LEN(@i))
+	declare @t INT
+	SET @t = LEN(@i)
+	IF 121 - @t < 0
+	BEGIN
+		--RAISERROR('Descrizione troppo lunga %d',16,-1,@t)
+		RETURN 'Descrizione troppo lunga ' + @descr
+    END
+	SET @i = @i + SPACE(121 - @t)
 
 /*
 Parte record importi:  (in comune a tutti i record)						
@@ -153,12 +178,12 @@ Parte record importi:  (in comune a tutti i record)
 
 */
 	--fill with spaces up to 136 chars
-	IF @currency = 0 --EURO
+	IF @currencyContoBase = 0 --EURO
 	BEGIN
 		--importo in chf
 		SELECT @eurorate = IntRate 
 		FROM Accounting.tbl_CurrencyGamingdateRates	
-		WHERE CurrencyID = 0 AND GamingDate = @Gamingdate
+		WHERE CurrencyID = 0 AND GamingDate = @ControlGamingdate
 
 		SET @chf = ABS(@importo) * @eurorate
 		SET @i = @i + LTRIM(STR( @chf,10,2))
@@ -218,6 +243,13 @@ Dati inerenti le contropartite contabili:
     SET @i = @i + CAST(@contropartita AS VARCHAR(16))
 	SET @i = @i + SPACE(210 - LEN(@i))
 	SET @i = @i + LTRIM(STR( @chf,10,2))
+	SET @i = @i + SPACE(225 - LEN(@i))
+
+    If @currencyControPartita = 0  --contropartita in euro
+	BEGIN
+        --go with euro importo
+		SET @i = @i + LTRIM(STR( ABS(@importo),10,2))
+	END
 	SET @i = @i + SPACE(240 - LEN(@i))
 
 /*
@@ -230,17 +262,23 @@ Centro di Costo
 37	Importo (v.Base)						15	char	(sep. decimale = .)	Cco.	Importo della registrazione in valuta base, se nel campo 34 il numero è superiore a 1, la somma di tutti gli importi di questa registrazione deve essere uguale a quella indicata nel campo 32 (se il numero è 1 l'importo deve essere uguale al campo 32)
 38	Importo (v.estera)						15	char	(sep. decimale = .)	Cco.	Importo della registrazione in valuta estera, se nel campo 34 il numero è superiore a 1, la somma di tutti gli importi di questa registrazione deve essere uguale a quella indicata nel campo 33 (se il numero è 1 l'importo deve essere uguale al campo 33)
 */
-	IF @cco IS NOT NULL
+	IF @cco IS NOT NULL AND @contoCCo IS NOT null
 	BEGIN
         SET @i = @i + '001' + @cco
 		SET @i = @i + SPACE(258 - LEN(@i))
-	    If @contropartita = 33500
-		    SET @contropartita = 33220
+	    --If @contoCCo = 33500
+		--    SET @contoCCo = 33220
 
-		SET @i = @i + CAST(@contropartita AS VARCHAR(16))
+		SET @i = @i + @contoCCo
 		SET @i = @i + SPACE(270 - LEN(@i))
 
 	 	SET @i = @i + LTRIM(STR( @chf,10,2))
+		SET @i = @i + SPACE(285 - LEN(@i))
+		If @currencyControPartita = 0  --contropartita in euro
+		BEGIN
+			--go with euro importo
+			SET @i = @i + LTRIM(STR( ABS(@importo),10,2))
+		END
 		SET @i = @i + SPACE(300 - LEN(@i))
    
 	END

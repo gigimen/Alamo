@@ -218,38 +218,51 @@ from [Accounting].[fn_GetStockLifeCycleInfo]  (@giornoprima,6)
 
 --SELECT * FROM @StockStatus
 
-IF EXISTS (SELECT name FROM tempdb..sysobjects 
-	WHERE name LIKE '#ChiusureStocks%'
-	)
-begin
-	print 'dropping #ChiusureStocks'
-	DROP TABLE #ChiusureStocks
-END
-
 declare @Apertura as table (ValueTypeName varchar(32),Total int,timeLoc datetime)
 
+DECLARE @ChiusureStocks TABLE(
+StockID					INT			NOT NULL,
+GamingDate				DATETIME,
+OraChiusura				DATETIME,
+DenoID					INT			NOT NULL,
+Denomination			FLOAT		NOT NULL,
+ValueTypeID				INT,
+ValueTypeName			VARCHAR(32),
+CurrencyID				INT,
+CurrencyAcronim			VARCHAR(16),
+Chiusura				INT,
+Ripristino				INT,		
+PRIMARY KEY (StockID,DenoID,GamingDate) 
+)
+
 --go with stock status
+INSERT INTO @ChiusureStocks
+(
+    StockID,
+    GamingDate,
+    OraChiusura,
+    DenoID,
+    Denomination,
+    ValueTypeID,
+	ValueTypeName,
+    CurrencyID,
+    CurrencyAcronim,
+    Chiusura,
+    Ripristino
+)
 select
-	s.Tag,
-	s.StockTypeID,
 	s.StockID,
 	s.GamingDate,
-	s.LastGamingDate,
-	s.LastLFID,
 	s.OraChiusura,
-	s.RIPTransactionID,
-	s.StockCompositionID,
 	den.DenoID,
-	den.FName as DenoName,
 	den.Denomination,
 	den.ValueTypeID,
 	vt.FName											AS ValueTypeName,
 	cu.CurrencyID,
 	cu.IsoName											AS CurrencyAcronim,
 	isnull((ch.Quantity),0)								as Chiusura,
-	isnull((rip.Quantity),0)							as Ripristino,
-	isnull(rip.ExchangeRate,1)							as RipExchangeRate
-INTO #ChiusureStocks
+	isnull((rip.Quantity),0)							as Ripristino
+--INTO #ChiusureStocks
 FROM @StockStatus s 
 inner join CasinoLayout.StockCompositions sc ON sc.StockCompositionID = s.StockCompositionID 
 inner JOIN CasinoLayout.StockComposition_Denominations sd ON sc.StockCompositionID = sd.StockCompositionID 
@@ -262,7 +275,7 @@ left outer	join [Accounting].[vw_AllSnapshotDenominations] ch on ch.LifeCycleSna
 left outer	join [Accounting].[vw_AllTransactionDenominations] rip on rip.TransactionID = s.RIPTransactionID and den.DenoID = rip.DenoID
 where den.ValueTypeID in (1,2,3,7,36,40,42) --gettoni chf,banconote chf,monete chf,euro,gettoni gioco euro,monete euro,gettoni euro
 
---select * from #ChiusureStocks order by StockID,DenoID
+--select * from @ChiusureStocks order by StockID,DenoID
 
 insert into @Apertura
 select 
@@ -276,7 +289,7 @@ select
 --	DenoName,
 	sum((Chiusura + Ripristino)*Denomination),
 	max(s.OraChiusura) as ChiusuraTime
-from #ChiusureStocks s
+from @ChiusureStocks s --#ChiusureStocks s
 group by 
 	case 
 		WHEN s.ValueTypeID in(1,36,42) then 'GETTONI' 
@@ -295,14 +308,6 @@ group by cont.Tag,
 		s.GamingDate*/
 
 		--order by cont.StockID
-
-IF EXISTS (SELECT name FROM tempdb..sysobjects 
-	WHERE name LIKE '#ChiusureStocks%'
-	)
-BEGIN
-	PRINT 'dropping #ChiusureStocks'
-	DROP TABLE #ChiusureStocks
-END
 
 INSERT INTO @Apertura
 SELECT	'DEPOSITI_CHF' 

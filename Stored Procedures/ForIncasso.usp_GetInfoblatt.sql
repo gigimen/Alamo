@@ -17,7 +17,7 @@ set @gaming = '9.1.2020'
 
 execute [ForIncasso].[usp_GetInfoblatt] @gaming
 
- 
+
 --*/
 
 declare @EuroRate float
@@ -26,7 +26,7 @@ declare @EuroRate float
 DECLARE @ultimogiorno DATETIME
 SELECT @ultimogiorno = MAX(gamingdate) FROM Accounting.tbl_CurrencyGamingdateRates 
 WHERE GamingDate <= @gaming AND CurrencyID = 0
-	
+
 SELECT @eurorate = IntRate 
 FROM Accounting.tbl_CurrencyGamingdateRates 
 WHERE GamingDate = @ultimogiorno AND CurrencyID = 0
@@ -39,11 +39,55 @@ BEGIN
 END
 
 
+DECLARE  @return TABLE
+(
+	Game VARCHAR(2),
+	GamingDate DATETIME,
+	TableCount INT,
+	CashBox FLOAT,
+	CashBoxCol VARCHAR(1),
+	BSE float,
+	BSECol VARCHAR(1),
+	TroncTavoli	FLOAT,			 							
+	TroncCol VARCHAR(1),
+	TroncSala FLOAT,			
+	TroncsalaCol VARCHAR(1),
+	Visite INT,
+	VisiteCol VARCHAR(1),
+	FxRate FLOAT,											
+	FxRateCol VARCHAR(1),
+	Gastro FLOAT,												
+	GastroCol VARCHAR(1)
+
+)
+
+INSERT INTO @return
+(
+    Game,
+    GamingDate,
+	TableCount,
+    CashBox,
+    CashBoxCol,
+    BSE,
+    BSECol,
+    TroncTavoli,
+    TroncCol,
+    TroncSala,
+    TroncsalaCol,
+    Visite,
+    VisiteCol,
+    FxRate,
+    FxRateCol,
+    Gastro,
+    GastroCol
+)
+
+
 
 SELECT	b.Game
 		,@gaming								AS GamingDate
 		,b.TableCount
-		,b.TableOpen
+--		,b.TableOpen
 		,b.CashBox
 		--,'F'									AS CashBoxCol
 		,'I'									AS CashBoxCol
@@ -134,6 +178,57 @@ LEFT OUTER JOIN [Accounting].[vw_DailyTroncSala] s ON s.GamingDate = b.GamingDat
 --LEFT OUTER JOIN [Accounting].[vw_DailyTroncGastro] tg ON tg.GamingDate = b.GamingDate
 LEFT OUTER JOIN Snoopy.tbl_EntrateSummary ck ON ck.GamingDate = b.GamingDate
 LEFT OUTER JOIN  [GASTRO].[GastroHelper].[Accounting].[vw_TotalDailyBalance] g  ON g.GamingDate = b.GamingDate
+
+
+
+INSERT INTO @return
+	(
+		Game,
+		GamingDate,
+		TableCount,
+		CashBox,
+		CashBoxCol,
+		BSE,
+		BSECol,
+		TroncTavoli,
+		TroncCol,
+		TroncSala,
+		TroncsalaCol,
+		Visite,
+		VisiteCol,
+		FxRate,
+		FxRateCol,
+		Gastro,
+		GastroCol
+	)
+SELECT
+	   'ZZ', -- Game - varchar(2)
+		@gaming, -- GamingDate - datetime
+		1, -- TableCount - int
+		0, -- CashBox - float
+		'I', -- CashBoxCol - varchar(1)
+		[BSECHF], -- BSE - float
+		'G', -- BSECol - varchar(1)
+		0, -- TroncTavoli - float
+		'Y', -- TroncCol - varchar(1)
+		0, -- TroncSala - float
+		'S', -- TroncsalaCol - varchar(1)
+		0, -- Visite - int
+		'U', -- VisiteCol - varchar(1)
+		0, -- FxRate - float
+		'V', -- FxRateCol - varchar(1)
+		0, -- Gastro - float
+		'T'  -- GastroCol - varchar(1)
+FROM [Accounting].[vw_TorneoPokerBSE]
+WHERE lastday = @gaming
+
+
+
+
+
+
+SELECT * FROM @return
+ORDER BY Game
 
 --select * from [GASTRO].[GastroHelper].[Accounting].[vw_TotalDailyBalance] where gamingdate = '9.20.2020'
 GO

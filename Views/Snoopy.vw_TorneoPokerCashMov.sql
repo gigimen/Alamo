@@ -8,6 +8,7 @@ GO
 
 
 
+
 /****** Script for SelectTopNRows command from SSMS  ******/
 CREATE VIEW [Snoopy].[vw_TorneoPokerCashMov]
 AS
@@ -23,6 +24,12 @@ SELECT
 	,m.[AmountCents]
 	,g.[TaxCents]
 	,g.[BuyInCents]
+	,CAST(m.[AmountCents] AS FLOAT)/ 100.0 AS AmountEUR
+	,CAST(g.[TaxCents]	  AS FLOAT)/ 100.0 AS TaxEUR
+	,CAST(g.[BuyInCents]  AS FLOAT)/ 100.0 AS BuyInEUR
+	,CAST(m.[AmountCents] AS FLOAT)/ 100.0 * r.IntRate AS AmountCHF
+	,CAST(g.[TaxCents]	  AS FLOAT)/ 100.0 * r.IntRate AS TaxCHF
+	,CAST(g.[BuyInCents]  AS FLOAT)/ 100.0 * r.IntRate AS BuyInCHF
 	,m.[FK_UserAccessID]
 	,m.[Progressivo]
 	,[Snoopy].[fn_TorneoCheckRientro](m.[FK_TPGiornataID],m.[FK_CustomerID]) AS CheckRientro
@@ -42,7 +49,7 @@ SELECT
 	,st.StockTypeID
 	,lf.LifeCycleID
 	,lf.GamingDate AS PagamentoGamingDate
-	  
+	,r.IntRate AS euroRate 
   FROM  [Alamo].[Snoopy].[tbl_PokerTorneoCashMov] m
   INNER JOIN [CasinoLayout].[tbl_TorneiPokerGiornate] g ON g.PK_TPGiornataID = m.FK_TPGiornataID
   INNER JOIN [CasinoLayout].[tbl_TorneiPoker] t ON t.[PK_TorneoID] = g.[FK_TorneoID]
@@ -50,6 +57,7 @@ SELECT
   INNER JOIN Snoopy.tbl_Customers c ON c.CustomerID = m.FK_CustomerID
   INNER JOIN Accounting.tbl_LifeCycles lf ON lf.LifeCycleID = m.FK_LIfeCyleID
   INNER JOIN CasinoLayout.Stocks st ON st.StockID = lf.StockID
+  INNER JOIN Accounting.tbl_CurrencyGamingdateRates r ON r.GamingDate = lf.GamingDate AND r.CurrencyID = 0
 
-  WHERE m.CancelID IS null
+  WHERE m.CancelID IS NULL
 GO
