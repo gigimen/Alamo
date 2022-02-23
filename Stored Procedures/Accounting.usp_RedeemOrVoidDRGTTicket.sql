@@ -127,7 +127,7 @@ BEGIN TRY
 
 	
 
-
+	SET @TransID = SCOPE_IDENTITY()
 	SET @TransTimeStampLoc = GeneralPurpose.fn_UTCToLocal(1,@TransTimeStampLoc)
 
 
